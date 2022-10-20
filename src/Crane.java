@@ -18,6 +18,8 @@ public class Crane {
 
     void setLocation(Coordinaat location) {
         this.location = location;
+        this.path.put(time,location);
+        time++;
     }
 
     Coordinaat getLocation() {
@@ -73,7 +75,7 @@ public class Crane {
         }
 
         path.put(time, area[x][y][0]);
-        time++;
+        time++;                             //tijd misrekent nog globaal
 
         location = area[x][y][0];
         return location;
@@ -83,9 +85,9 @@ public class Crane {
             System.out.println("time: " + entry.getKey());
             int[][] depot = new int[area.length][area[0].length];
             depot[entry.getValue().getX()][entry.getValue().getY()] = 1;
-            for(int i = area.length-1; i>=0 ; i--){
-                for(int j = 0; j< area[0].length; j++){
-                    System.out.print(" [" + depot[i][j] + "] ");
+            for(int i = area[0].length-1; i >= 0 ; i--){
+                for(int j = 0; j< area.length; j++){
+                    System.out.print(" [" + depot[j][i] + "] ");
                 }
                 System.out.println();
             }

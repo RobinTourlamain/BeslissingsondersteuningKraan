@@ -12,15 +12,19 @@ public class Main {
             }
         }
         Crane crane1 = new Crane(c, 1,1);
+        Crane crane2 = new Crane(c,1,1);
         crane1.setLocation(new Coordinaat(0,0,0));
+        crane2.setLocation(new Coordinaat(2,2,0));
         List<Crane> cranes = new ArrayList<>();
         cranes.add(crane1);
+        //cranes.add(crane2);
         Depot depot = new Depot(5,5,5, cranes,1);
 
         depot.addMove(4,4,crane1);
-        depot.addMove(3,1,crane1);
+
         depot.calcMovements();
 
         crane1.printPath();
+
     }
 }
