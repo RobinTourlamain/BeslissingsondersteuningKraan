@@ -43,19 +43,35 @@ public class Crane {
 //        location = area[dest.getX()][dest.getY()][0];
 //        return location;
 //    }
-    Coordinaat move(Coordinaat dest) {          //WERKT ENKEL CORRECT VOOR BEWEGINGEN NAAR POSITIEVE KANT!! AANPASSING NODIG
+    Coordinaat move(Coordinaat dest) {
         int x;
         int y;
 
-        x = location.getX() + speedX;
-        y = location.getY() + speedY;
+        if(dest.getX()-location.getX() > 0){
+            x = location.getX() + speedX;
+            if (x > dest.getX()) {
+                x = dest.getX();
+            }
+        }
+        else{
+            x = location.getX() - speedX;
+            if (x < dest.getX()) {
+                x = dest.getX();
+            }
+        }
+        if(dest.getY()- location.getY() > 0){
+            y = location.getY() + speedY;
+            if (y > dest.getY()) {
+                y = dest.getY();
+            }
+        }
+        else{
+            y = location.getY() - speedY;
+            if (y < dest.getY()) {
+                y = dest.getY();
+            }
+        }
 
-        if (x > dest.getX()) {
-            x = dest.getX();
-        }
-        if (y > dest.getY()) {
-            y = dest.getY();
-        }
         path.put(time, area[x][y][0]);
         time++;
 
