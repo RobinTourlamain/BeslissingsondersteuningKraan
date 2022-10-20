@@ -17,7 +17,7 @@ public class Main {
         crane2.setLocation(new Coordinaat(2,2,0));
         List<Crane> cranes = new ArrayList<>();
         cranes.add(crane1);
-        //cranes.add(crane2);
+        //cranes.add(crane2);                                          //veroorzaakt deadlock want staat in de weg
         Depot depot = new Depot(5,5,5, cranes,1);
 
         depot.addMove(4,4,crane1);
