@@ -5,7 +5,6 @@ import com.github.cliftonlabs.json_simple.Jsonable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.List;
 
 public class Inputobject implements Jsonable {
     public String name;
@@ -22,7 +21,7 @@ public class Inputobject implements Jsonable {
         final StringWriter writable = new StringWriter();
         try {
             this.toJson(writable);
-        } catch (final IOException e) {
+        } catch (final IOException ignored) {
         }
         return writable.toString();
     }
