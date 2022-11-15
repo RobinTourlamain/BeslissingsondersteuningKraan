@@ -19,28 +19,36 @@ public class Main {
         containers.forEach(c-> c.slots.forEach(s -> System.out.println(s.id)));
 
         new GUI();
-//        Coordinaat[][][] c = new Coordinaat[5][5][5];
-//        for (int i = 0; i < 5; i++) {
-//            for (int j = 0; j < 5; j++) {
-//                for (int k = 0; k < 5; k++) {
-//                    c[i][j][k] = new Coordinaat(i, j, k);
-//                }
-//            }
-//        }
-//        Crane crane1 = new Crane(c, 1,1);
-//        Crane crane2 = new Crane(c,1,1);
-//        crane1.setLocation(new Coordinaat(0,0,0));
-//        crane2.setLocation(new Coordinaat(2,2,0));
-//        List<Crane> cranes = new ArrayList<>();
-//        cranes.add(crane1);
-//        //cranes.add(crane2);                                          //veroorzaakt deadlock want staat in de weg
-//        Depot depot = new Depot(5,5,5, cranes,1);
-//
-//        depot.addMove(4,4,crane1);
-//
-//        depot.calcMovements();
-//
-//        crane1.printPath();
 
+        List<List<Slot>> area = makeArea(slots);
+
+
+        Crane crane1 = new Crane(area, 1,1);
+        Crane crane2 = new Crane(area,1,1);
+        crane1.setLocation(area.get(0).get(0));
+        crane2.setLocation(area.get(area.size()-1).get(0));
+        List<Crane> cranes = new ArrayList<>();
+        cranes.add(crane1);
+        //cranes.add(crane2);                                          //veroorzaakt deadlock want staat in de weg
+        Depot depot = new Depot(area, cranes,1);
+
+        depot.addMove(4,4,crane1);
+
+        depot.calcMovements();
+
+        crane1.printPath();
+
+
+
+    }
+
+    public static List<List<Slot>> makeArea(List<Slot> slots) {
+        List<List<Slot>> area = new ArrayList<>(new ArrayList<>());
+
+        for (Slot slot : slots) {
+            area.get(slot.x).add(slot.y, slot);
+        }
+
+        return area;
     }
 }

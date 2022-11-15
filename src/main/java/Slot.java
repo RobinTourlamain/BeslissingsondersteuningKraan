@@ -5,6 +5,7 @@ public class Slot {
     int id;
     int x;
     int y;
+    int Hmax;
     Deque<Container> containers;
 
     public Slot(int id, int x, int y) {

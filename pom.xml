@@ -14,12 +14,6 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>net.sf.dozer</groupId>
-            <artifactId>dozer</artifactId>
-            <version>5.5.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.cliftonlabs</groupId>
             <artifactId>json-simple</artifactId>
             <version>4.0.1</version>
