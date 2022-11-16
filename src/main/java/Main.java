@@ -11,8 +11,6 @@ public class Main {
 
 
 
-        containers.forEach(c-> c.slots.forEach(s -> System.out.println(s.id)));
-
         //new GUI();
 
 
@@ -20,22 +18,21 @@ public class Main {
             System.out.println(c.id);
         });
 
-        Crane crane1 = new Crane(area, 1,1);
-        Crane crane2 = new Crane(area,1,1);
-        crane1.setLocation(area.get(0).get(0));
-        crane2.setLocation(area.get(area.size()-1).get(0));
-        List<Crane> cranes = new ArrayList<>();
-        cranes.add(crane1);
-        //cranes.add(crane2);                                          //veroorzaakt deadlock want staat in de weg
-        Depot depot = new Depot(area, cranes,1);
 
-        depot.addMove(4,4,crane1);
-
-        depot.calcMovements();
-
-        crane1.printPath();
-
-
+//        Crane crane1 = new Crane(area, 1,1);
+//        Crane crane2 = new Crane(area,1,1);
+//        crane1.setLocation(area.get(0).get(0));
+//        crane2.setLocation(area.get(area.size()-1).get(0));
+//        List<Crane> cranes = new ArrayList<>();
+//        cranes.add(crane1);
+//        cranes.add(crane2);                                          //veroorzaakt deadlock want staat in de weg
+//        Depot depot = new Depot(area, cranes,1);
+//
+//        depot.addMove(4,4,crane1);
+//
+//        depot.calcMovements();
+//
+//        crane1.printPath();
 
     }
 }
