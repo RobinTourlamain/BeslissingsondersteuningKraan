@@ -12,7 +12,6 @@ public class Crane {
     public int time;
 
 
-
     public Crane(List<List<Slot>> area, float X, float Y, int speedX, int speedY) {
         this.area = area;
         location = new Coordinate(X, Y);

@@ -18,6 +18,15 @@ public class Container {
         slot.containers.add(this);
     }
 
+    public boolean checkMovable() {
+        for (Slot slot : slots) {
+            if (slot.containers.peek() != this) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean checkPlaceable(List<Slot> destSlots) {
         int height = destSlots.get(0).containers.size();
         for (Slot slot : destSlots) {

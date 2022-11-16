@@ -1,10 +1,48 @@
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
+
+import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Input {
+
+    private final List<Container> containers;
+    private final List<Slot> slots;
+    private final List<List<Slot>> area;
+
+    public Input(String fileName) {
+        FileReader fileReader;
+        JsonObject deserialize;
+        try {
+            fileReader = new FileReader(fileName);
+            deserialize = (JsonObject) Jsoner.deserialize(fileReader);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        this.containers = new ArrayList<>(Input.readContainers(deserialize));
+        this.slots = new ArrayList<>(Input.readSlots(deserialize));
+
+        assignContainersToSlots(slots, containers, deserialize);
+
+        this.area = makeArea(slots);
+    }
+
+    public List<Container> getContainers() {
+        return containers;
+    }
+
+    public List<Slot> getSlots() {
+        return slots;
+    }
+
+    public List<List<Slot>> getArea() {
+        return area;
+    }
 
     public static List<Container> readContainers(JsonObject js){
         List<Container> containers = new ArrayList<>();
@@ -26,7 +64,7 @@ public class Input {
         return slots;
     }
 
-    public static void assign(List<Slot> slots, List<Container> containers, JsonObject jsonObject) {
+    public static void assignContainersToSlots(List<Slot> slots, List<Container> containers, JsonObject jsonObject) {
         JsonArray jsAssign = (JsonArray) jsonObject.get("assignments");
         for (Object obj : jsAssign) {
             JsonObject assignment = (JsonObject) obj;
@@ -41,5 +79,20 @@ public class Input {
                 container.assignSlot(slot);
             }
         }
+    }
+
+    public static List<List<Slot>> makeArea(List<Slot> slots) {
+        List<List<Slot>> area = new ArrayList<>();
+
+        slots.sort(Comparator.comparing(Slot::getX));
+
+        for (Slot slot : slots) {
+            if (area.size() < slot.x + 1) {
+                area.add(new ArrayList<>());
+            }
+            area.get(slot.x).add(slot.y, slot);
+        }
+
+        return area;
     }
 }

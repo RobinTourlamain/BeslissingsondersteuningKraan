@@ -1,28 +1,24 @@
-import com.github.cliftonlabs.json_simple.JsonException;
-import com.github.cliftonlabs.json_simple.JsonObject;
-import com.github.cliftonlabs.json_simple.Jsoner;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws IOException, JsonException {
+    public static void main(String[] args) {
 
-        FileReader fileReader = new FileReader("terminal_4_3.json");
-        JsonObject deserialize = (JsonObject) Jsoner.deserialize(fileReader);
-        List<Container> containers= new ArrayList<>(Input.readContainers(deserialize));
-        List<Slot> slots = new ArrayList<>(Input.readSlots(deserialize));
-        Input.assign(slots, containers, deserialize);
+        Input input = new Input("terminal_4_3.json");
+
+        List<Container> containers = input.getContainers();
+        List<Slot> slots = input.getSlots();
+        List<List<Slot>> area = input.getArea();
+
+
 
         containers.forEach(c-> c.slots.forEach(s -> System.out.println(s.id)));
 
         //new GUI();
 
-        List<List<Slot>> area = makeArea(slots);
 
+        Algorithm.findExposed(area).forEach(c -> {
+            System.out.println(c.id);
+        });
 
         Crane crane1 = new Crane(area, 1,1);
         Crane crane2 = new Crane(area,1,1);
@@ -41,20 +37,5 @@ public class Main {
 
 
 
-    }
-
-    public static List<List<Slot>> makeArea(List<Slot> slots) {
-        List<List<Slot>> area = new ArrayList<>();
-
-        slots.sort(Comparator.comparing(Slot::getX));
-
-        for (Slot slot : slots) {
-            if (area.size() < slot.x + 1) {
-                area.add(new ArrayList<>());
-            }
-            area.get(slot.x).add(slot.y, slot);
-        }
-
-        return area;
     }
 }
