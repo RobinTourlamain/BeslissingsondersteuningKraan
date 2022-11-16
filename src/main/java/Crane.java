@@ -3,34 +3,38 @@ import java.util.List;
 import java.util.Map;
 
 public class Crane {
-    private final List<List<Slot>> area;
-    private final int speedX;
-    private final int speedY;
-    private Slot location;
-    private final Map<Integer,Slot> path = new HashMap<>();
-    private int time;
+    public final List<List<Slot>> area;
+    public final int speedX;
+    public final int speedY;
+    public Coordinate location;
+    public final Map<Integer, Coordinate> path = new HashMap<>();
+    public Container attachedContainer;
+    public int time;
 
 
-    public Crane(List<List<Slot>> area, int speedX, int speedY) {
+
+    public Crane(List<List<Slot>> area, float X, float Y, int speedX, int speedY) {
         this.area = area;
+        location = new Coordinate(X, Y);
         this.speedX = speedX;
         this.speedY = speedY;
+        attachedContainer = null;
         this.time = 0;
     }
 
-    void setLocation(Slot location) {
+    void setLocation(Coordinate location) {
         this.location = location;
-        this.path.put(time,location);
+        this.path.put(time, location);
         time++;
     }
 
-    Slot getLocation() {
+    Coordinate getLocation() {
         return location;
     }
 
-    Slot move(Slot dest) {
-        int x;
-        int y;
+    Coordinate move(Coordinate dest) {
+        float x;
+        float y;
 
         if(dest.x - location.x > 0){
             x = location.x + speedX;
@@ -57,24 +61,22 @@ public class Crane {
             }
         }
 
-        path.put(time, area.get(x).get(y));
-        time++;                             //tijd misrekent nog globaal
+        Coordinate coordinate = new Coordinate(x, y);
 
-        location = area.get(x).get(y);
+        path.put(time, coordinate);
+        //tijd misrekent nog globaal
+        time++;
+
+        location = coordinate;
         return location;
     }
-    public void printPath(){
-        for(var entry: path.entrySet()){
-            System.out.println("time: " + entry.getKey());
-            int[][] depot = new int[area.size()][area.get(0).size()];
-            depot[entry.getValue().x][entry.getValue().y] = 1;
-            for(int i = area.get(0).size()-1; i >= 0 ; i--){
-                for(int j = 0; j< area.size(); j++){
-                    System.out.print(" [" + depot[j][i] + "] ");
-                }
-                System.out.println();
-            }
-        }
+
+    public void attachContainer(Container container) {
+        this.attachedContainer = container;
+    }
+
+    public void detachContianer() {
+        this.attachedContainer = null;
     }
 }
 

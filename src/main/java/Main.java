@@ -5,6 +5,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -18,7 +19,7 @@ public class Main {
 
         containers.forEach(c-> c.slots.forEach(s -> System.out.println(s.id)));
 
-        new GUI();
+        //new GUI();
 
         List<List<Slot>> area = makeArea(slots);
 
@@ -43,9 +44,14 @@ public class Main {
     }
 
     public static List<List<Slot>> makeArea(List<Slot> slots) {
-        List<List<Slot>> area = new ArrayList<>(new ArrayList<>());
+        List<List<Slot>> area = new ArrayList<>();
+
+        slots.sort(Comparator.comparing(Slot::getX));
 
         for (Slot slot : slots) {
+            if (area.size() < slot.x + 1) {
+                area.add(new ArrayList<>());
+            }
             area.get(slot.x).add(slot.y, slot);
         }
 
