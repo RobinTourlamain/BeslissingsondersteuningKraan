@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Algorithm {
 
-    public static void execute(List<Container> required, List<List<Slot>> area, List<Container> containers){
+    public static void execute(List<Container> required, List<List<Slot>> area, List<Container> containers) {
 
         while(!required.isEmpty()){
             for(Container c: findExposed(area)){

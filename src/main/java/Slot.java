@@ -14,5 +14,4 @@ public class Slot {
         this.y = y;
         this.containers = new ArrayDeque<>();
     }
-
 }

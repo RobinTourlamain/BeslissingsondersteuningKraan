@@ -46,9 +46,9 @@ public class Input {
 
     public static List<Container> readContainers(JsonObject js){
         List<Container> containers = new ArrayList<>();
-        JsonArray jscontainers = (JsonArray) js.get("containers");
-        for(Object obj : jscontainers){
-            JsonObject container = (JsonObject) obj;
+        JsonArray jsContainers = (JsonArray) js.get("containers");
+        for(Object jsContainer : jsContainers){
+            JsonObject container = (JsonObject) jsContainer;
             containers.add(new Container(((BigDecimal) container.get("id")).intValue(), ((BigDecimal) container.get("length")).intValue()));
         }
         return containers;
@@ -57,25 +57,25 @@ public class Input {
     public static List<Slot> readSlots(JsonObject jsonObject) {
         List<Slot> slots = new ArrayList<>();
         JsonArray jsSlots = (JsonArray) jsonObject.get("slots");
-        for (Object obj : jsSlots) {
-            JsonObject slot = (JsonObject) obj;
+        for (Object jsSlot : jsSlots) {
+            JsonObject slot = (JsonObject) jsSlot;
             slots.add(new Slot(((BigDecimal) slot.get("id")).intValue(), ((BigDecimal) slot.get("x")).intValue(), ((BigDecimal) slot.get("y")).intValue()));
         }
         return slots;
     }
 
     public static void assignContainersToSlots(List<Slot> slots, List<Container> containers, JsonObject jsonObject) {
-        JsonArray jsAssign = (JsonArray) jsonObject.get("assignments");
-        for (Object obj : jsAssign) {
-            JsonObject assignment = (JsonObject) obj;
-            Container container = containers.get(((BigDecimal) assignment.get("container_id")).intValue()-1);
-            JsonArray jsslots = (JsonArray) assignment.get("slot_id");
-            List<Integer> slot_ids = new ArrayList<>();
-            for (Object jsslot : jsslots) {
-                slot_ids.add(((BigDecimal) jsslot).intValue());
+        JsonArray jsAssignments = (JsonArray) jsonObject.get("assignments");
+        for (Object jsAssignment : jsAssignments) {
+            JsonObject assignment = (JsonObject) jsAssignment;
+            Container container = containers.get(((BigDecimal) assignment.get("container_id")).intValue() - 1);
+            JsonArray jsSlots = (JsonArray) assignment.get("slot_id");
+            List<Integer> slotIds = new ArrayList<>();
+            for (Object jsSlot : jsSlots) {
+                slotIds.add(((BigDecimal) jsSlot).intValue());
             }
-            for (int obj2 : slot_ids) {
-                Slot slot = slots.get(obj2-1);
+            for (int slotId : slotIds) {
+                Slot slot = slots.get(slotId - 1);
                 container.assignSlot(slot);
             }
         }
@@ -84,7 +84,7 @@ public class Input {
     public static List<List<Slot>> makeArea(List<Slot> slots) {
         List<List<Slot>> area = new ArrayList<>();
 
-        slots.sort(Comparator.comparing(Slot::getX));
+        slots.sort(Comparator.comparing(slot -> slot.x));
 
         for (Slot slot : slots) {
             if (area.size() < slot.x + 1) {
