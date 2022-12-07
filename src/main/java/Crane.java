@@ -3,7 +3,14 @@ import java.util.List;
 import java.util.Map;
 
 public class Crane {
-    public final List<List<Slot>> area;
+
+    public int id;
+    public float x;
+    public float y;
+    public int xMin;
+    public int xMax;
+    public int yMin;
+    public int yMax;
     public final int speedX;
     public final int speedY;
     public Coordinate location;
@@ -12,9 +19,13 @@ public class Crane {
     public int time;
 
 
-    public Crane(List<List<Slot>> area, float X, float Y, int speedX, int speedY) {
-        this.area = area;
-        location = new Coordinate(X, Y);
+    public Crane(int id, float X, float Y, int xMin, int xMax, int yMin, int yMax, int speedX, int speedY) {
+        this.id = id;
+        this.location = new Coordinate(X, Y);
+        this.xMin = xMin;
+        this.xMax = xMax;
+        this.yMin = yMin;
+        this.yMax = yMax;
         this.speedX = speedX;
         this.speedY = speedY;
         attachedContainer = null;

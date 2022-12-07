@@ -3,19 +3,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Depot {
-    private final List<Crane> cranes;
-    private final List<List<Slot>> area;
-    private final Map<Crane, List<Slot>> moves = new HashMap<>();
-    private final int minDist;
+public class Terminal {
+    public String name;
+    public int length;
+    public int width;
+    public int maxHeight;
+    public final List<Crane> cranes;
+    public final List<List<Slot>> area;
+    public final Map<Crane, List<Slot>> moves = new HashMap<>();
 
-    public Depot(List<List<Slot>> area, List<Crane> cranes, int minDist) {
+    public Terminal(String name, int length, int width, int maxHeight, List<List<Slot>> area, List<Crane> cranes) {
         this.area = area;
         for(Crane c: cranes){
             moves.put(c, new ArrayList<>());
         }
         this.cranes = cranes;
-        this.minDist = minDist;
     }
 
     public void addMove(int x, int y, Crane c) {

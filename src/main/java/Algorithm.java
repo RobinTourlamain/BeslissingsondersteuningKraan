@@ -18,6 +18,9 @@ public class Algorithm {
 
         for (List<Slot> slotList : area) {
             for (Slot slot : slotList) {
+                if (slot.containers.isEmpty()) {
+                    continue;
+                }
                 Container topContainer = slot.containers.peek();
                 if (res.contains(topContainer)) {
                     continue;

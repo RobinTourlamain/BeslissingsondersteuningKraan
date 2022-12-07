@@ -8,28 +8,39 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class Input {
-
+public class InputBegin {
     private final List<Container> containers;
     private final List<Slot> slots;
     private final List<List<Slot>> area;
+    private final List<Crane> cranes;
+    private final Terminal terminal;
 
-    public Input(String fileName) {
+    public InputBegin(String fileName) {
         FileReader fileReader;
-        JsonObject deserialize;
+        JsonObject jsonObject;
         try {
             fileReader = new FileReader(fileName);
-            deserialize = (JsonObject) Jsoner.deserialize(fileReader);
+            jsonObject = (JsonObject) Jsoner.deserialize(fileReader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        this.containers = new ArrayList<>(Input.readContainers(deserialize));
-        this.slots = new ArrayList<>(Input.readSlots(deserialize));
+        String terminalName = (String) jsonObject.get("name");
+        int terminalLength = ((BigDecimal) jsonObject.get("length")).intValue();
+        int terminalWidth = ((BigDecimal) jsonObject.get("width")).intValue();
+        int terminalMaxHeight = ((BigDecimal) jsonObject.get("maxheight")).intValue();
 
-        assignContainersToSlots(slots, containers, deserialize);
+        this.containers = readContainers(jsonObject);
+        this.slots = readSlots(jsonObject);
+
+        assignContainersToSlots(slots, containers, jsonObject);
 
         this.area = makeArea(slots);
+
+        this.cranes = readCranes(jsonObject);
+
+        this.terminal = new Terminal(terminalName, terminalLength, terminalWidth, terminalMaxHeight, area, cranes);
+
     }
 
     public List<Container> getContainers() {
@@ -44,9 +55,17 @@ public class Input {
         return area;
     }
 
-    public static List<Container> readContainers(JsonObject js){
+    public List<Crane> getCranes() {
+        return cranes;
+    }
+
+    public Terminal getTerminal() {
+        return terminal;
+    }
+
+    public static List<Container> readContainers(JsonObject jsonObject){
         List<Container> containers = new ArrayList<>();
-        JsonArray jsContainers = (JsonArray) js.get("containers");
+        JsonArray jsContainers = (JsonArray) jsonObject.get("containers");
         for(Object jsContainer : jsContainers){
             JsonObject container = (JsonObject) jsContainer;
             containers.add(new Container(((BigDecimal) container.get("id")).intValue(), ((BigDecimal) container.get("length")).intValue()));
@@ -69,13 +88,10 @@ public class Input {
         for (Object jsAssignment : jsAssignments) {
             JsonObject assignment = (JsonObject) jsAssignment;
             Container container = containers.get(((BigDecimal) assignment.get("container_id")).intValue() - 1);
-            JsonArray jsSlots = (JsonArray) assignment.get("slot_id");
-            List<Integer> slotIds = new ArrayList<>();
-            for (Object jsSlot : jsSlots) {
-                slotIds.add(((BigDecimal) jsSlot).intValue());
-            }
-            for (int slotId : slotIds) {
-                Slot slot = slots.get(slotId - 1);
+            int slotId = ((BigDecimal) assignment.get("slot_id")).intValue();
+
+            for (int i = 0; i < container.length; i++) {
+                Slot slot = slots.get(slotId - 1 + i);
                 container.assignSlot(slot);
             }
         }
@@ -94,5 +110,15 @@ public class Input {
         }
 
         return area;
+    }
+
+    public static List<Crane> readCranes(JsonObject jsonObject) {
+        List<Crane> cranes = new ArrayList<>();
+        JsonArray jsCranes = (JsonArray) jsonObject.get("cranes");
+        for (Object jsCrane : jsCranes) {
+            JsonObject crane = (JsonObject) jsCrane;
+            cranes.add(new Crane(((BigDecimal) crane.get("id")).intValue(), ((BigDecimal) crane.get("x")).intValue(), ((BigDecimal) crane.get("y")).intValue(), ((BigDecimal) crane.get("xmin")).intValue(), ((BigDecimal) crane.get("xmax")).intValue(), ((BigDecimal) crane.get("ymin")).intValue(), ((BigDecimal) crane.get("ymax")).intValue(), ((BigDecimal) crane.get("xspeed")).intValue(), ((BigDecimal) crane.get("yspeed")).intValue()));
+        }
+        return cranes;
     }
 }

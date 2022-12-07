@@ -3,9 +3,9 @@ import java.util.HashSet;
 import java.util.List;
 
 public class Container {
-    int id;
-    int length;
-    List<Slot> slots;
+    public int id;
+    public int length;
+    public List<Slot> slots;
 
     public Container(int id, int length) {
         this.id = id;

@@ -3,13 +3,16 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
 
-        Input input = new Input("terminal_4_3.json");
+        InputBegin inputBegin = new InputBegin("terminal22_1_100_1_10.json");
 
-        List<Container> containers = input.getContainers();
-        List<Slot> slots = input.getSlots();
-        List<List<Slot>> area = input.getArea();
+        List<Container> containers = inputBegin.getContainers();
+        List<Slot> slots = inputBegin.getSlots();
+        List<List<Slot>> area = inputBegin.getArea();
 
+        InputTarget inputTarget = new InputTarget("terminal22_1_100_1_10target.json");
+        List<Assignment> assignments = inputTarget.getAssignments();
 
+        assignments.forEach(assignment -> System.out.println(assignment.slotId + " " + assignment.containerId));
 
         //new GUI();
 
@@ -26,7 +29,7 @@ public class Main {
 //        List<Crane> cranes = new ArrayList<>();
 //        cranes.add(crane1);
 //        cranes.add(crane2);                                          //veroorzaakt deadlock want staat in de weg
-//        Depot depot = new Depot(area, cranes,1);
+//        Terminal depot = new Terminal(area, cranes,1);
 //
 //        depot.addMove(4,4,crane1);
 //
