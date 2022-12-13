@@ -15,7 +15,7 @@ public class Container {
 
     public void assignSlot(Slot slot) {
         this.slots.add(slot);
-        slot.containers.add(this);
+        slot.addContainer(this);
     }
 
     public boolean checkMovable() {

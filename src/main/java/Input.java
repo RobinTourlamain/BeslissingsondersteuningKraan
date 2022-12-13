@@ -8,14 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class InputBegin {
-    private final List<Container> containers;
-    private final List<Slot> slots;
-    private final List<List<Slot>> area;
-    private final List<Crane> cranes;
+public class Input {
     private final Terminal terminal;
 
-    public InputBegin(String fileName) {
+    public Input(String fileName) {
         FileReader fileReader;
         JsonObject jsonObject;
         try {
@@ -30,33 +26,21 @@ public class InputBegin {
         int terminalWidth = ((BigDecimal) jsonObject.get("width")).intValue();
         int terminalMaxHeight = ((BigDecimal) jsonObject.get("maxheight")).intValue();
 
-        this.containers = readContainers(jsonObject);
-        this.slots = readSlots(jsonObject);
+        int terminalTargetHeight = 0;
+        if (jsonObject.containsKey("targetheight")) {
+            terminalTargetHeight = ((BigDecimal) jsonObject.get("targetheight")).intValue();
+            System.out.println(terminalTargetHeight);
+        }
 
+        List<Container> containers = readContainers(jsonObject);
+        List<Slot> slots = readSlots(jsonObject);
         assignContainersToSlots(slots, containers, jsonObject);
 
-        this.area = makeArea(slots);
+        List<List<Slot>> area = makeArea(slots);
+        List<Crane> cranes = readCranes(jsonObject);
 
-        this.cranes = readCranes(jsonObject);
+        this.terminal = new Terminal(terminalName, terminalLength, terminalWidth, terminalMaxHeight, terminalTargetHeight, containers, slots, area, cranes);
 
-        this.terminal = new Terminal(terminalName, terminalLength, terminalWidth, terminalMaxHeight, area, cranes);
-
-    }
-
-    public List<Container> getContainers() {
-        return containers;
-    }
-
-    public List<Slot> getSlots() {
-        return slots;
-    }
-
-    public List<List<Slot>> getArea() {
-        return area;
-    }
-
-    public List<Crane> getCranes() {
-        return cranes;
     }
 
     public Terminal getTerminal() {
@@ -87,11 +71,12 @@ public class InputBegin {
         JsonArray jsAssignments = (JsonArray) jsonObject.get("assignments");
         for (Object jsAssignment : jsAssignments) {
             JsonObject assignment = (JsonObject) jsAssignment;
-            Container container = containers.get(((BigDecimal) assignment.get("container_id")).intValue() - 1);
+            Container container = containers.get(((BigDecimal) assignment.get("container_id")).intValue());
             int slotId = ((BigDecimal) assignment.get("slot_id")).intValue();
 
             for (int i = 0; i < container.length; i++) {
-                Slot slot = slots.get(slotId - 1 + i);
+                //Klopt dit? Moet het horizontaal of verticaal?
+                Slot slot = slots.get(slotId + i);
                 container.assignSlot(slot);
             }
         }
