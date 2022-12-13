@@ -26,7 +26,7 @@ public class Algorithm {
         return res;
     }
 
-    public static List<Integer> findChangedContainers(Terminal terminal, Terminal targetTerminal) {
+    public static List<Integer> findChangedContainerIds(Terminal terminal, Terminal targetTerminal) {
 
         List<Integer> movedContainerIds = new ArrayList<>();
 
@@ -39,7 +39,7 @@ public class Algorithm {
         return movedContainerIds;
     }
 
-    public static List<Integer> findContainersAboveMaxHeight(Terminal terminal) {
+    public static List<Integer> findContainerIdsAboveMaxHeight(Terminal terminal) {
         Set<Integer> containerIdsToMove = new HashSet<>();
 
         for (Slot slot : terminal.slots) {
