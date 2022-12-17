@@ -13,12 +13,19 @@ public class Container {
         this.slots = new ArrayList<>();
     }
 
+    public void removeFromSlots() {
+        for (Slot slot : slots) {
+            slot.containers.remove(this);
+        }
+        this.slots.clear();
+    }
+
     public void assignSlot(Slot slot) {
         this.slots.add(slot);
         slot.addContainer(this);
     }
 
-    public boolean checkMovable() {
+    public boolean isMovable() {
         for (Slot slot : slots) {
             if (slot.containers.peek() != this) {
                 return false;
@@ -27,7 +34,7 @@ public class Container {
         return true;
     }
 
-    public boolean checkPlaceable(List<Slot> destSlots) {
+    public boolean isPlaceable(List<Slot> destSlots) {
         int height = destSlots.get(0).containers.size();
         for (Slot slot : destSlots) {
             //check if containers in the slots are stacked to the same height
