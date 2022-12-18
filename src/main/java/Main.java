@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -10,6 +11,7 @@ public class Main {
         Terminal startTerminal = input.getTerminal();
         System.out.println(startTerminal.cranes.size());
 
+        List<Action> result = new ArrayList<>();
 
         if (startTerminal.targetHeight == 0) {
             Input inputTarget = new Input("instances/5t/targetTerminalB_20_10_3_2_160.json");
@@ -40,8 +42,7 @@ public class Main {
                             }
                         }
 
-                        List<Action> actions = Recursion.makeSolution(startTerminal, startTerminal.slots.get(slotnumber), height, container);
-                        actions.forEach(System.out::println);
+                        result.addAll(Recursion.makeSolution(startTerminal, startTerminal.slots.get(slotnumber), height, container));
 
 
 //                        //check slot want in target staat hier een container
@@ -88,7 +89,7 @@ public class Main {
             Algorithm.findContainerIdsAboveMaxHeight(startTerminal).forEach(System.out::println);
         }
 
-
+        result.forEach(System.out::println);
     }
 
 //    public static boolean recursiveMain(){

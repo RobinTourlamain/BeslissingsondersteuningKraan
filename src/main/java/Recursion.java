@@ -22,10 +22,13 @@ public class Recursion {
                 break;
             }
         }
+        //containerPlaceable = Algorithm.containerFits(terminal, new ArrayList<>(), container, currentSlot.x, currentSlot.y);
 
         if (!container.isMovable() || !containerPlaceable) {
+            System.out.println("recursie");
             //TODO: when should it return false?
             List<Action> actions = getPossibleMoves(terminal, currentSlot, height, container);
+            System.out.println(actions.size());
             if (actions.isEmpty()) {
                 return false;
             }
