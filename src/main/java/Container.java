@@ -25,6 +25,11 @@ public class Container {
         slot.addContainer(this);
     }
 
+    public void assignSlot(Slot slot, int height) {
+        this.slots.add(slot);
+        slot.addContainer(this, height);
+    }
+
     public boolean isMovable() {
         for (Slot slot : slots) {
             if (slot.containers.peek() != this) {
@@ -62,8 +67,8 @@ public class Container {
         float middleY = 0;
 
         for (Slot slot : slots) {
-            middleX += slot.x;
-            middleY += slot.y;
+            middleX += slot.x + 0.5;
+            middleY += slot.y + 0.5;
         }
 
         middleX /= length;

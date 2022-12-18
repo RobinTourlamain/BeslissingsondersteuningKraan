@@ -5,12 +5,10 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -41,12 +39,14 @@ public class Interface extends Application {
         primaryStage.show();
 
         Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
+        //Input input = new Input("instances/5t/targetTerminalB_20_10_3_2_160.json");
         //Input input = new Input("instances/2mh/MH2Terminal_20_10_3_2_100.json");
         Terminal startTerminal = input.getTerminal();
         int tlength = startTerminal.length;
         int twidth = startTerminal.width;
         List<List<Slot>> area = startTerminal.area;
         List<Slot> slots = startTerminal.slots;
+        List<Container> containers = startTerminal.containers;
 
         //plot containers
         List<Integer> plotted = new ArrayList<>();
@@ -56,7 +56,14 @@ public class Interface extends Application {
                     int id = slot.containers.get(h).id;
                     if(!plotted.contains(id)){
                         plotted.add(id);
-                        pane.getChildren().add(newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length));
+                        Rectangle rectangle = newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length);
+                        Text text = new Text(String.valueOf(id));
+                        text.setScaleY(-1);
+                        text.translateXProperty().set(pane.getWidth()/tlength*slot.x);
+                        text.translateYProperty().set(pane.getHeight()/twidth*slot.y);
+                        StackPane stackPane = new StackPane();
+                        stackPane.getChildren().addAll(rectangle, text);
+                        pane.getChildren().add(stackPane);
                     }
                 }
             }
@@ -76,7 +83,7 @@ public class Interface extends Application {
         pane.getChildren().add(crane);
 
         //voer acties uit
-        List<Action> actions = Main.main();
+        List<Action> actions = Main.main(); //new ArrayList<>();
         System.out.println("actionsize " + actions.size());
         SequentialTransition sequence = new SequentialTransition();
         for(Action action : actions){
@@ -89,7 +96,7 @@ public class Interface extends Application {
             KeyValue keyValueposx = new KeyValue(crane.translateXProperty(), rectangle.getTranslateX() + (rectangle.getWidth()/2));
             KeyValue keyValueposy = new KeyValue(crane.translateYProperty(), rectangle.getTranslateY() + (rectangle.getHeight()/2));
 
-            KeyFrame keyFramepos = new KeyFrame(Duration.seconds(4), keyValueposx, keyValueposy);
+            KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), keyValueposx, keyValueposy);
             Timeline timeline1 = new Timeline(keyFramepos);
             sequence.getChildren().add(timeline1);
 
@@ -98,9 +105,12 @@ public class Interface extends Application {
             KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*(action.slot.x + 0.5)-crane.getWidth()/2);
             KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*(action.slot.y + 0.5)-crane.getHeight()/2);
 
-            KeyFrame keyFrame = new KeyFrame(Duration.seconds(4),keyValuex,keyValuey,keyValuecranex,keyValuecraney);
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds(2),keyValuex,keyValuey,keyValuecranex,keyValuecraney);
             Timeline timeline2 = new Timeline(keyFrame);
             sequence.getChildren().add(timeline2);
+            rectangle.toFront();
+            crane.toFront();
+            frame.toFront();
         }
         sequence.play();
     }

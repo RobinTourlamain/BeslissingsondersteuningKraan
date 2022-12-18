@@ -5,6 +5,7 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,10 +34,14 @@ public class Input {
         }
 
         List<Container> containers = readContainers(jsonObject);
-        List<Slot> slots = readSlots(jsonObject);
+        List<Slot> slots = readSlots(jsonObject, terminalMaxHeight);
         slots.sort(Comparator.comparing(slot -> slot.id));
         assignContainersToSlots(slots, containers, jsonObject);
-
+        
+        for (Slot slot : slots) {
+            slot.containers.removeAll(Collections.singleton(null));
+        }
+        
         List<List<Slot>> area = makeArea(slots);
         List<Crane> cranes = readCranes(jsonObject);
 
@@ -58,12 +63,12 @@ public class Input {
         return containers;
     }
 
-    public static List<Slot> readSlots(JsonObject jsonObject) {
+    public static List<Slot> readSlots(JsonObject jsonObject, int maxHeight) {
         List<Slot> slots = new ArrayList<>();
         JsonArray jsSlots = (JsonArray) jsonObject.get("slots");
         for (Object jsSlot : jsSlots) {
             JsonObject slot = (JsonObject) jsSlot;
-            slots.add(new Slot(((BigDecimal) slot.get("id")).intValue(), ((BigDecimal) slot.get("x")).intValue(), ((BigDecimal) slot.get("y")).intValue()));
+            slots.add(new Slot(((BigDecimal) slot.get("id")).intValue(), ((BigDecimal) slot.get("x")).intValue(), ((BigDecimal) slot.get("y")).intValue(), maxHeight));
         }
         return slots;
     }
@@ -75,10 +80,20 @@ public class Input {
             Container container = containers.get(((BigDecimal) assignment.get("container_id")).intValue());
             int slotId = ((BigDecimal) assignment.get("slot_id")).intValue();
 
+
+            Slot startSlot = slots.get(slotId);
+            int height = startSlot.containers.size();
+            for (int i = 0; i < startSlot.containers.size(); i++) {
+                if (startSlot.containers.get(i) == null) {
+                    height = i;
+                    break;
+                }
+            }
+
             for (int i = 0; i < container.length; i++) {
-                //Klopt dit? Moet het horizontaal of verticaal?
                 Slot slot = slots.get(slotId + i);
-                container.assignSlot(slot);
+                //int height = slots.get(slotId).containers.size();
+                container.assignSlot(slot, height);
             }
         }
     }
@@ -88,7 +103,7 @@ public class Input {
 
         List<Slot> slotsCopy = new ArrayList<>(slots);
 
-        slotsCopy.sort(Comparator.comparing(slot -> slot.x));
+        slotsCopy.sort(Comparator.comparing((Slot slot) -> slot.x).thenComparing((Slot slot) -> slot.y));
 
         for (Slot slot : slotsCopy) {
             if (area.size() < slot.x + 1) {
