@@ -17,4 +17,11 @@ public class Slot {
     public void addContainer(Container c){
         containers.add(c);
     }
+
+    @Override
+    public String toString() {
+        return "Slot{" +
+                "id=" + id +
+                '}';
+    }
 }

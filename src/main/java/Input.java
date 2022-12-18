@@ -34,6 +34,7 @@ public class Input {
 
         List<Container> containers = readContainers(jsonObject);
         List<Slot> slots = readSlots(jsonObject);
+        slots.sort(Comparator.comparing(slot -> slot.id));
         assignContainersToSlots(slots, containers, jsonObject);
 
         List<List<Slot>> area = makeArea(slots);
@@ -85,9 +86,11 @@ public class Input {
     public static List<List<Slot>> makeArea(List<Slot> slots) {
         List<List<Slot>> area = new ArrayList<>();
 
-        slots.sort(Comparator.comparing(slot -> slot.x));
+        List<Slot> slotsCopy = new ArrayList<>(slots);
 
-        for (Slot slot : slots) {
+        slotsCopy.sort(Comparator.comparing(slot -> slot.x));
+
+        for (Slot slot : slotsCopy) {
             if (area.size() < slot.x + 1) {
                 area.add(new ArrayList<>());
             }
