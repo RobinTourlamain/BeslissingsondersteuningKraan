@@ -1,7 +1,7 @@
 public class Action {
-    private final Container container;
-    private final Slot slot;
-    private Slot prevSlot;
+    public final Container container;
+    public final Slot slot;
+    public Slot prevSlot;
 
     public Action(Container container, Slot slot) {
         this.container = container;
