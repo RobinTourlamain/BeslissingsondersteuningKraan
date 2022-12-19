@@ -20,7 +20,7 @@ public class Action {
     }
 
     public void reverse(Terminal terminal) {
-        System.out.println("reverse");
+        //System.out.println("reverse");
         container.removeFromSlots();
         for (int i = 0; i < container.length; i++) {
             container.assignSlot(terminal.slots.get(prevSlot.id + i));

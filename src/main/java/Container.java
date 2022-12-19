@@ -54,13 +54,16 @@ public class Container {
             if(slot.containers.size() == 0){
                 continue;
             }
-            //Check if containers below are larger
-            if (slot.containers.peek().length > length) {
-                return false;
-            }
-            //containers below are smaller, but do they extend beyond where we want to place the container
-            if (!new HashSet<>(destSlots).containsAll(slot.containers.peek().slots)) {
-                return false;
+            //Check if containers below
+            if (slot.containers.size() > 0) {
+                //Check if containers below are larger
+                if (slot.containers.peek().length > length) {
+                    return false;
+                }
+                //containers below are smaller, but do they extend beyond where we want to place the container
+                if (!new HashSet<>(destSlots).containsAll(slot.containers.peek().slots)) {
+                    return false;
+                }
             }
         }
         return true;
@@ -81,13 +84,16 @@ public class Container {
             if(slot.containers.size() == 0){
                 continue;
             }
-            //Check if containers below are larger
-            if (slot.containers.peek().length > length) {
-                return false;
-            }
-            //containers below are smaller, but do they extend beyond where we want to place the container
-            if (!new HashSet<>(destSlots).containsAll(slot.containers.peek().slots)) {
-                return false;
+            //Check if containers below
+            if (slot.containers.size() > 0) {
+                //Check if containers below are larger
+                if (slot.containers.peek().length > length) {
+                    return false;
+                }
+                //containers below are smaller, but do they extend beyond where we want to place the container
+                if (!new HashSet<>(destSlots).containsAll(slot.containers.peek().slots)) {
+                    return false;
+                }
             }
         }
         return true;

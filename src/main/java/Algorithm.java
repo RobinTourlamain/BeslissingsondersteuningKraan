@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Algorithm {
 
@@ -144,5 +141,56 @@ public class Algorithm {
             destination.forEach(container::assignSlot);
             //TODO toevoegen aan een movelijst
         }
+    }
+
+    public static Slot findTransferSlot(Terminal terminal, Container container) {
+        assert terminal.cranes.size() == 2 : "Wrong crane count";
+
+        List<Crane> craneCopy = new ArrayList<>(terminal.cranes);
+        craneCopy.sort(Comparator.comparing(crane -> crane.xMin));
+
+        int xMin = craneCopy.get(1).xMin;
+        int xMax = craneCopy.get(0).xMax;
+
+        if (container.length > 1) {
+            xMin -= 1;
+            xMax += 1;
+        }
+
+        for (int y = 0; y < terminal.width; y++) {
+            for (int x = xMin; x + container.length < xMax; x++) {
+                if (Algorithm.containerFits(terminal, new ArrayList<>(), container, x, y)) {
+                    return terminal.area.get(x).get(y);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static boolean staysWithinOneCraneArea(Terminal terminal, Container container, Slot currentSlot) {
+        boolean oneCrane = false;
+
+        for (Crane crane : terminal.cranes) {
+            int xMin = crane.xMin;
+            int xMax = crane.xMax;
+
+            if (container.length > 1) {
+                if (xMin == 0) {
+                    xMax += 1;
+                }
+                if (xMax == terminal.length) {
+                    xMin -= 1;
+                }
+            }
+
+            Slot containerSlot = container.slots.get(0);
+            if (xMin <= containerSlot.x && containerSlot.x <= xMax && xMin <= currentSlot.x && currentSlot.x <= xMax) {
+                oneCrane = true;
+                break;
+            }
+        }
+
+        return oneCrane;
     }
 }
