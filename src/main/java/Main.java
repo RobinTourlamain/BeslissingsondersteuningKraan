@@ -4,9 +4,9 @@ import java.util.List;
 public class Main {
     public static List<Action> main() {
 
-        //Input input = new Input("instances/1t/TerminalA_20_10_3_2_100.json");
+        Input input = new Input("instances/1t/TerminalA_20_10_3_2_100.json");
         //Input input = new Input("instances/3t/TerminalA_20_10_3_2_160.json");
-        Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
+        //Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
         //Input input = new Input("instances/6t/Terminal_10_10_3_1_100.json");
         //Input input = new Input("instances/2mh/MH2Terminal_20_10_3_2_100.json");
         //Input input = new Input("instances/4mh/MH2Terminal_20_10_3_2_160.json");
@@ -17,9 +17,9 @@ public class Main {
         List<Action> result = new ArrayList<>();
 
         if (startTerminal.targetHeight == 0) {
-            //Input inputTarget = new Input("instances/1t/targetTerminalA_20_10_3_2_100.json");
+            Input inputTarget = new Input("instances/1t/targetTerminalA_20_10_3_2_100.json");
             //Input inputTarget = new Input("instances/3t/targetTerminalA_20_10_3_2_160.json");
-            Input inputTarget = new Input("instances/5t/targetTerminalB_20_10_3_2_160.json");
+            //Input inputTarget = new Input("instances/5t/targetTerminalB_20_10_3_2_160.json");
             //Input inputTarget = new Input("instances/6t/targetTerminal_10_10_3_1_100.json");
 
             Terminal endTerminal = inputTarget.getTerminal();

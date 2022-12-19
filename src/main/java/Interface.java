@@ -38,9 +38,9 @@ public class Interface extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
 
-        //Input input = new Input("instances/1t/TerminalA_20_10_3_2_100.json");
+        Input input = new Input("instances/1t/TerminalA_20_10_3_2_100.json");
         //Input input = new Input("instances/3t/TerminalA_20_10_3_2_160.json");
-        Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
+        //Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
         //Input input = new Input("instances/6t/Terminal_10_10_3_1_100.json");
         //Input input = new Input("instances/2mh/MH2Terminal_20_10_3_2_100.json");
         //Input input = new Input("instances/4mh/MH2Terminal_20_10_3_2_160.json");
@@ -59,7 +59,7 @@ public class Interface extends Application {
                     int id = slot.containers.get(h).id;
                     if(!plotted.contains(id)){
                         plotted.add(id);
-                        Rectangle rectangle = newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length);
+                        Rectangle rectangle = newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length, 10100-h);
                         Text text = new Text(String.valueOf(id));
                         text.setScaleY(-1);
                         text.translateXProperty().set(pane.getWidth()/tlength*slot.x);
@@ -76,11 +76,13 @@ public class Interface extends Application {
         Rectangle crane = new Rectangle();
         crane.heightProperty().bind(pane.heightProperty().divide(twidth).divide(2));
         crane.widthProperty().bind(pane.widthProperty().divide(tlength).divide(2));
+        crane.setViewOrder(0);
 
         Rectangle frame = new Rectangle();
         frame.heightProperty().bind(pane.heightProperty());
         frame.widthProperty().bind(pane.widthProperty().divide(tlength).divide(4));
         frame.translateXProperty().bind(crane.translateXProperty().add(crane.widthProperty().divide(4)));
+        frame.setViewOrder(0);
 
         pane.getChildren().add(frame);
         pane.getChildren().add(crane);
@@ -89,17 +91,21 @@ public class Interface extends Application {
         List<Action> actions = Main.main(); //new ArrayList<>();
         System.out.println("actionsize " + actions.size());
         SequentialTransition sequence = new SequentialTransition();
+        int prior = 10000;
         for(Action action : actions){
             String id = "#" + action.container.id;
             Rectangle rectangle = (Rectangle) pane.lookup(id);
-            rectangle.toFront();
-            crane.toFront();
-            frame.toFront();
 
             KeyValue keyValueposx = new KeyValue(crane.translateXProperty(), rectangle.getTranslateX() + (rectangle.getWidth()/2));
             KeyValue keyValueposy = new KeyValue(crane.translateYProperty(), rectangle.getTranslateY() + (rectangle.getHeight()/2));
 
-            KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), keyValueposx, keyValueposy);
+            int finalPrior = prior;
+            KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), actionEvent -> {
+                rectangle.toFront();
+                rectangle.setViewOrder(finalPrior);
+            }, keyValueposx, keyValueposy);
+            prior--;
+
             Timeline timeline1 = new Timeline(keyFramepos);
             sequence.getChildren().add(timeline1);
 
@@ -118,7 +124,7 @@ public class Interface extends Application {
         sequence.play();
     }
 
-    public Rectangle newContainer(Pane pane, int tlength, int twidth, int i, int j, int index, int length){
+    public Rectangle newContainer(Pane pane, int tlength, int twidth, int i, int j, int index, int length, int prior){
         Random random = new Random();
         Rectangle rectangle = new Rectangle(200,100);
         rectangle.translateXProperty().set(pane.getWidth()/tlength*j);
@@ -127,6 +133,7 @@ public class Interface extends Application {
         rectangle.heightProperty().bind(pane.heightProperty().divide(twidth));
         rectangle.setFill(Color.rgb(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
         rectangle.setId(String.valueOf(index));
+        rectangle.setViewOrder(prior);
         return rectangle;
     }
 
