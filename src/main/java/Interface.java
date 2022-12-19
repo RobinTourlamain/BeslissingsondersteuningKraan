@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -40,10 +41,10 @@ public class Interface extends Application {
 
         //String filename = "instances/1t/TerminalA_20_10_3_2_100.json";
         //String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
-        String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
+        //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
         //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
         //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         Input input = new Input(filename);
 
@@ -63,13 +64,6 @@ public class Interface extends Application {
                     if (!plotted.contains(id)) {
                         plotted.add(id);
                         Rectangle rectangle = newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length, 10100-h);
-//                        Text text = new Text(String.valueOf(id));
-//                        text.setScaleY(-1);
-//                        text.translateXProperty().set(pane.getWidth()/tlength*slot.x);
-//                        text.translateYProperty().set(pane.getHeight()/twidth*slot.y);
-//                        StackPane stackPane = new StackPane();
-//                        stackPane.getChildren().addAll(rectangle, text);
-//                        pane.getChildren().add(stackPane);
                         pane.getChildren().add(rectangle);
                     }
                 }
@@ -81,6 +75,7 @@ public class Interface extends Application {
             Text text = new Text(String.valueOf(slot.containers.size()));
             text.setId("h" + slot.id);
             text.setScaleY(-1);
+            text.setFont(Font.font(16));
             text.translateXProperty().set(pane.getWidth()/tlength*(slot.x + 0.5));
             text.translateYProperty().set(pane.getHeight()/twidth*(slot.y + 0.5));
             pane.getChildren().add(text);

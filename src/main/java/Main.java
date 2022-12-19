@@ -5,31 +5,16 @@ public class Main {
     public static List<Action> main(String filename) {
 
         Input input = new Input(filename);
-
         Terminal startTerminal = input.getTerminal();
-        System.out.println(startTerminal.cranes.size());
 
         List<Action> result = new ArrayList<>();
 
         if (startTerminal.targetHeight == 0) {
-
             String[] filenameSplit = filename.split("/");
             String targetFilename = filenameSplit[0] + "/" + filenameSplit[1] + "/" + "target" + filenameSplit[2];
 
             Input inputTarget = new Input(targetFilename);
-
             Terminal endTerminal = inputTarget.getTerminal();
-
-            List<Integer> changedContainerIds = Algorithm.findChangedContainerIds(startTerminal, endTerminal);
-
-            for (Integer id : changedContainerIds) {
-                if (startTerminal.containers.get(id).isMovable()) {
-                    System.out.println(id + " movable");
-                }
-                else {
-                    System.out.println(id + " not movable");
-                }
-            }
 
             for (int height = 0; height < startTerminal.maxHeight; height++) {
                 for (int slotnumber = 0; slotnumber < startTerminal.slots.size(); slotnumber++) {
@@ -84,9 +69,7 @@ public class Main {
         else {
             System.out.println(Algorithm.findContainersAboveMaxHeight(startTerminal).size());
             result.addAll(HeightReduction.makeSolution(startTerminal));
-            result.forEach(action -> {
-                System.out.println("container " + action.container.id + " naar slot " + action.slot.id);
-            });
+            result.forEach(action -> System.out.println("container " + action.container.id + " naar slot " + action.slot.id));
 
             boolean mistakeFound = false;
             for (Slot slot : startTerminal.slots) {
