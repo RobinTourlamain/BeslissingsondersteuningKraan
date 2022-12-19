@@ -90,19 +90,4 @@ public class Container {
         }
         return true;
     }
-
-    public Coordinate getAttachPoint() {
-        float middleX = 0;
-        float middleY = 0;
-
-        for (Slot slot : slots) {
-            middleX += slot.x + 0.5;
-            middleY += slot.y + 0.5;
-        }
-
-        middleX /= length;
-        middleY /= length;
-
-        return new Coordinate(middleX, middleY);
-    }
 }

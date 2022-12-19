@@ -19,7 +19,7 @@ import java.util.Random;
 public class Interface extends Application {
 
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 
     @Override
@@ -40,10 +40,10 @@ public class Interface extends Application {
 
         //String filename = "instances/1t/TerminalA_20_10_3_2_100.json";
         //String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
-        //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
+        String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
         //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
         //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         Input input = new Input(filename);
 
@@ -56,11 +56,11 @@ public class Interface extends Application {
 
         //plot containers
         List<Integer> plotted = new ArrayList<>();
-        for(int h = 0; h < startTerminal.maxHeight; h++){
-            for(Slot slot : slots){
-                if(slot.containers.size() > h){
+        for (int h = 0; h < startTerminal.maxHeight; h++) {
+            for (Slot slot : slots) {
+                if (slot.containers.size() > h) {
                     int id = slot.containers.get(h).id;
-                    if(!plotted.contains(id)){
+                    if (!plotted.contains(id)) {
                         plotted.add(id);
                         Rectangle rectangle = newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length, 10100-h);
 //                        Text text = new Text(String.valueOf(id));
@@ -77,7 +77,7 @@ public class Interface extends Application {
         }
 
         //plot height
-        for(Slot slot : startTerminal.slots){
+        for (Slot slot : startTerminal.slots) {
             Text text = new Text(String.valueOf(slot.containers.size()));
             text.setId("h" + slot.id);
             text.setScaleY(-1);
@@ -106,12 +106,12 @@ public class Interface extends Application {
         System.out.println("actionsize " + actions.size());
         SequentialTransition sequence = new SequentialTransition();
         int prior = 10000;
-        for(Action action : actions){
+        for (Action action : actions) {
             String id = "#" + action.container.id;
             Rectangle rectangle = (Rectangle) pane.lookup(id);
             List<Text> textsource = new ArrayList<>();
             List<Text> textdestination = new ArrayList<>();
-            for(int i = 0; i < action.container.length; i++){
+            for (int i = 0; i < action.container.length; i++) {
                 textsource.add((Text) pane.lookup("#h" + (action.prevSlot.id + i)));
                 textdestination.add((Text) pane.lookup("#h" + (action.slot.id + i)));
             }
@@ -123,7 +123,7 @@ public class Interface extends Application {
             KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), actionEvent -> {
                 rectangle.toFront();
                 rectangle.setViewOrder(finalPrior);
-                for(Text text : textsource){
+                for (Text text : textsource) {
                     text.setText(String.valueOf(Integer.parseInt(text.getText()) - 1));
                 }
             }, keyValueposx, keyValueposy);
@@ -138,10 +138,10 @@ public class Interface extends Application {
             KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*(action.slot.y + 0.5)-crane.getHeight()/2);
 
             KeyFrame keyFrame = new KeyFrame(Duration.seconds(2), actionEvent -> {
-                for(Text text : textdestination){
+                for (Text text : textdestination) {
                     text.setText(String.valueOf(Integer.parseInt(text.getText()) + 1));
                 }
-            }, keyValuex,keyValuey,keyValuecranex,keyValuecraney);
+            }, keyValuex, keyValuey, keyValuecranex, keyValuecraney);
             Timeline timeline2 = new Timeline(keyFrame);
             sequence.getChildren().add(timeline2);
             rectangle.toFront();
@@ -151,7 +151,7 @@ public class Interface extends Application {
         sequence.play();
     }
 
-    public Rectangle newContainer(Pane pane, int tlength, int twidth, int i, int j, int index, int length, int prior){
+    public Rectangle newContainer(Pane pane, int tlength, int twidth, int i, int j, int index, int length, int prior) {
         Random random = new Random();
         Rectangle rectangle = new Rectangle(200,100);
         rectangle.translateXProperty().set(pane.getWidth()/tlength*j);

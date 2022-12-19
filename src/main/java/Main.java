@@ -44,7 +44,7 @@ public class Main {
                             }
                         }
 
-                        result.addAll(Recursion.makeSolution(startTerminal, startTerminal.slots.get(slotnumber), height, container));
+                        result.addAll(Transfer.makeSolution(startTerminal, startTerminal.slots.get(slotnumber), height, container));
                     }
                 }
 
@@ -90,8 +90,9 @@ public class Main {
 
             boolean mistakeFound = false;
             for (Slot slot : startTerminal.slots) {
-                if(slot.containers.size() > startTerminal.targetHeight){
+                if (slot.containers.size() > startTerminal.targetHeight) {
                     mistakeFound = true;
+                    break;
                 }
             }
             if (!mistakeFound) {

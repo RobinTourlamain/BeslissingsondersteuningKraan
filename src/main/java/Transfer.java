@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Recursion {
+public class Transfer {
 
     public static List<Action> makeSolution(Terminal terminal, Slot currentSlot, int height, Container container) {
         List<Action> result = new ArrayList<>();
