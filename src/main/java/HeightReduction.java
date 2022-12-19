@@ -41,7 +41,7 @@ public class HeightReduction {
 
     public static boolean moveContainer(Terminal terminal, Crane crane, Container container, List<Action> result){
         if(!container.isMovable()) return false;
-        int[] coords = craneHasRoomForContainer(terminal, crane, container);
+        int[] coords = craneHasRoomForContainer(terminal, crane, container, new ArrayList<>());
         if(coords.length > 1){
             Action action = new Action(container, terminal.area.get(coords[0]).get(coords[1]));
             action.execute(terminal);
@@ -52,13 +52,54 @@ public class HeightReduction {
         System.out.println("no room!");
         int room = otherCranesHaveRoom(terminal, crane, container);
         if(room == 0){
-            //TODO maak hierplaats
             System.out.println("maakplaats!");
+            return makeRoomHere(terminal, crane, container, result);
         }
         else if(!isInTransition(terminal, crane, container, room)){
             return moveToTransitionZone(terminal, crane, container, result, room);
         }
 
+        return false;
+    }
+
+    public static boolean makeRoomHere(Terminal terminal, Crane crane, Container container, List<Action> result){
+        for(int y = 0; y < terminal.width; y++){
+            for(int x = crane.xMin; x + container.length -1 < crane.xMax; x++){
+                if(!terminal.area.get(x).get(y).containers.isEmpty()){
+                    if(terminal.area.get(x).get(y).containers.peek().isMovable()){
+                        if(moveRandom(terminal, terminal.area.get(x).get(y).containers.peek(), crane, result)){
+                            int[] coords = craneHasRoomForContainer(terminal, crane, container, new ArrayList<>());
+                            if(coords.length > 1){
+                                Action action = new Action(container, terminal.area.get(coords[0]).get(coords[1]));
+                                action.execute(terminal);
+                                result.add(action);
+                                System.out.println(action.container.id + " to " + action.slot.id);
+                                return true;
+                            }
+                            else if(makeRoomHere(terminal, crane, container, result)){
+                                return true;
+                            }
+                            else{
+                                Action action = result.remove(result.size()-1);
+                                action.reverse(terminal);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean moveRandom(Terminal terminal, Container container, Crane crane, List<Action> result){
+        List<Slot> blacklist = new ArrayList<>(container.slots);
+        int[] coords = craneHasRoomForContainer(terminal, crane, container, blacklist);
+        if(coords.length > 1){
+            Action action = new Action(container, terminal.area.get(coords[0]).get(coords[1]));
+            action.execute(terminal);
+            result.add(action);
+            System.out.println(action.container.id + " to " + action.slot.id);
+        }
         return false;
     }
 
@@ -94,8 +135,7 @@ public class HeightReduction {
                 }
             }
         }
-        //maak transition vrij
-
+        //TODO maak transition vrij?
 
         return false;
     }
@@ -105,7 +145,7 @@ public class HeightReduction {
         List<Crane> cranes = new ArrayList<>(terminal.cranes);
         cranes.remove(notcrane);
         for(Crane crane : cranes){
-            if(craneHasRoomForContainer(terminal,crane,container).length > 1){
+            if(craneHasRoomForContainer(terminal,crane,container, new ArrayList<>()).length > 1){
                 if(crane.id < notcrane.id){
                     return -1;
                 }
@@ -117,15 +157,23 @@ public class HeightReduction {
         System.out.println("other crane has room");
         return 0;
     }
+
     //returned [x, y] om opnieuw zoeken uit te sparen
-    public static int[] craneHasRoomForContainer(Terminal terminal, Crane crane, Container container){
+    public static int[] craneHasRoomForContainer(Terminal terminal, Crane crane, Container container, List<Slot> blacklist){
         for(int y = 0; y < terminal.width; y++){
             for(int x = crane.xMin; x + container.length -1 < crane.xMax; x++){ //kan fucken als de xmax van de kraan niet klopt >:(
                 List<Slot> slots = new ArrayList<>();
                 for(int i = 0; i<container.length; i++){
                     slots.add(terminal.area.get(x+i).get(y));
                 }
-                if(container.isPlaceableTargetHeight(slots, terminal.targetHeight)){
+                boolean valid = true;
+                for(Slot slot : slots){
+                    if (blacklist.contains(slot)) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if(valid && container.isPlaceableTargetHeight(slots, terminal.targetHeight)){
                     int[] res = new int[2];
                     res[0] = x;
                     res[1] = y;

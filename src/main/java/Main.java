@@ -87,6 +87,17 @@ public class Main {
             result.forEach(action -> {
                 System.out.println("container " + action.container.id + " naar slot " + action.slot.id);
             });
+
+            boolean mistakeFound = false;
+            for (Slot slot : startTerminal.slots) {
+                if(slot.containers.size() > startTerminal.targetHeight){
+                    mistakeFound = true;
+                }
+            }
+            if (!mistakeFound) {
+                System.out.println("all correct");
+            }
+
             return result;
         }
 

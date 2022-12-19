@@ -50,10 +50,6 @@ public class Container {
             if (slot.containers.size() + 1 > slot.maxHeight) {          //veranderd van >= naar >
                 return false;
             }
-            //als hoogte nul is skip volgende checks
-            if(slot.containers.size() == 0){
-                continue;
-            }
             //Check if containers below
             if (slot.containers.size() > 0) {
                 //Check if containers below are larger
@@ -79,10 +75,6 @@ public class Container {
             //check if max height is exceeded if you add the container
             if (slot.containers.size() + 1 > targetHeight) {          //veranderd van >= naar >
                 return false;
-            }
-            //als hoogte nul is skip volgende checks
-            if(slot.containers.size() == 0){
-                continue;
             }
             //Check if containers below
             if (slot.containers.size() > 0) {
