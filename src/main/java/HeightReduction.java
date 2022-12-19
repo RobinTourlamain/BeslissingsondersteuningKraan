@@ -108,10 +108,7 @@ public class HeightReduction {
         int minx = Math.max(crane.xMin, secondcrane.xMin);
         int maxx = Math.min(crane.xMax, secondcrane.xMax);
 
-        if(container.slots.get(0).x > minx && container.slots.get(0).x + container.length - 1 < maxx){
-            return true;
-        }
-        return false;
+        return container.slots.get(0).x > minx && container.slots.get(0).x + container.length - 1 < maxx;
     }
 
     public  static boolean moveToTransitionZone(Terminal terminal, Crane crane, Container container, List<Action> result, int room){

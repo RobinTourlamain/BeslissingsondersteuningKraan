@@ -63,16 +63,27 @@ public class Interface extends Application {
                     if(!plotted.contains(id)){
                         plotted.add(id);
                         Rectangle rectangle = newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length, 10100-h);
-                        Text text = new Text(String.valueOf(id));
-                        text.setScaleY(-1);
-                        text.translateXProperty().set(pane.getWidth()/tlength*slot.x);
-                        text.translateYProperty().set(pane.getHeight()/twidth*slot.y);
-                        StackPane stackPane = new StackPane();
-                        stackPane.getChildren().addAll(rectangle, text);
-                        pane.getChildren().add(stackPane);
+//                        Text text = new Text(String.valueOf(id));
+//                        text.setScaleY(-1);
+//                        text.translateXProperty().set(pane.getWidth()/tlength*slot.x);
+//                        text.translateYProperty().set(pane.getHeight()/twidth*slot.y);
+//                        StackPane stackPane = new StackPane();
+//                        stackPane.getChildren().addAll(rectangle, text);
+//                        pane.getChildren().add(stackPane);
+                        pane.getChildren().add(rectangle);
                     }
                 }
             }
+        }
+
+        //plot height
+        for(Slot slot : startTerminal.slots){
+            Text text = new Text(String.valueOf(slot.containers.size()));
+            text.setId("h" + slot.id);
+            text.setScaleY(-1);
+            text.translateXProperty().set(pane.getWidth()/tlength*(slot.x + 0.5));
+            text.translateYProperty().set(pane.getHeight()/twidth*(slot.y + 0.5));
+            pane.getChildren().add(text);
         }
 
         //plot kranen
@@ -98,6 +109,12 @@ public class Interface extends Application {
         for(Action action : actions){
             String id = "#" + action.container.id;
             Rectangle rectangle = (Rectangle) pane.lookup(id);
+            List<Text> textsource = new ArrayList<>();
+            List<Text> textdestination = new ArrayList<>();
+            for(int i = 0; i < action.container.length; i++){
+                textsource.add((Text) pane.lookup("#h" + (action.prevSlot.id + i)));
+                textdestination.add((Text) pane.lookup("#h" + (action.slot.id + i)));
+            }
 
             KeyValue keyValueposx = new KeyValue(crane.translateXProperty(), rectangle.getTranslateX() + (rectangle.getWidth()/2));
             KeyValue keyValueposy = new KeyValue(crane.translateYProperty(), rectangle.getTranslateY() + (rectangle.getHeight()/2));
@@ -106,6 +123,9 @@ public class Interface extends Application {
             KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), actionEvent -> {
                 rectangle.toFront();
                 rectangle.setViewOrder(finalPrior);
+                for(Text text : textsource){
+                    text.setText(String.valueOf(Integer.parseInt(text.getText()) - 1));
+                }
             }, keyValueposx, keyValueposy);
             prior--;
 
@@ -117,7 +137,11 @@ public class Interface extends Application {
             KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*(action.slot.x + 0.5)-crane.getWidth()/2);
             KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*(action.slot.y + 0.5)-crane.getHeight()/2);
 
-            KeyFrame keyFrame = new KeyFrame(Duration.seconds(2),keyValuex,keyValuey,keyValuecranex,keyValuecraney);
+            KeyFrame keyFrame = new KeyFrame(Duration.seconds(2), actionEvent -> {
+                for(Text text : textdestination){
+                    text.setText(String.valueOf(Integer.parseInt(text.getText()) + 1));
+                }
+            }, keyValuex,keyValuey,keyValuecranex,keyValuecraney);
             Timeline timeline2 = new Timeline(keyFrame);
             sequence.getChildren().add(timeline2);
             rectangle.toFront();
