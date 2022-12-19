@@ -1,12 +1,13 @@
+import java.awt.event.HierarchyBoundsAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static List<Action> main() {
 
-        Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
+        //Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
         //Input input = new Input("instances/example/example.json");
-        //Input input = new Input("instances/2mh/MH2Terminal_20_10_3_2_100.json");
+        Input input = new Input("instances/4mh/MH2Terminal_20_10_3_2_160.json");
 
         Terminal startTerminal = input.getTerminal();
         System.out.println(startTerminal.cranes.size());
@@ -87,8 +88,12 @@ public class Main {
             }
         }
         else {
-            Algorithm.findContainerIdsAboveMaxHeight(startTerminal).forEach(System.out::println);
-            return null;
+            System.out.println(Algorithm.findContainersAboveMaxHeight(startTerminal).size());
+            result.addAll(HeightReduction.makeSolution(startTerminal));
+            result.forEach(action -> {
+                System.out.println("container " + action.container.id + " naar slot " + action.slot.id);
+            });
+            return result;
         }
 
         result.forEach(System.out::println);

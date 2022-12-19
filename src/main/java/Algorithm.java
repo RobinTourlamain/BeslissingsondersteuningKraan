@@ -39,16 +39,16 @@ public class Algorithm {
         return movedContainerIds;
     }
 
-    public static List<Integer> findContainerIdsAboveMaxHeight(Terminal terminal) {
-        Set<Integer> containerIdsToMove = new HashSet<>();
+    public static List<Container> findContainersAboveMaxHeight(Terminal terminal) {
+        Set<Container> containersToMove = new HashSet<>();
 
         for (Slot slot : terminal.slots) {
             if (slot.containers.size() > terminal.targetHeight) {
-                containerIdsToMove.add(slot.containers.peek().id);
+                containersToMove.add(slot.containers.peek());
             }
         }
 
-        return new ArrayList<>(containerIdsToMove);
+        return new ArrayList<>(containersToMove);
     }
 
     ///////////////////////////////////////////////////TO TARGET TERMINAL ALGORTITHM//////////////////////////////////
