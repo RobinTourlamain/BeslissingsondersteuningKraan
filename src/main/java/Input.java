@@ -5,7 +5,6 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,10 +36,6 @@ public class Input {
         List<Slot> slots = readSlots(jsonObject, terminalMaxHeight);
         slots.sort(Comparator.comparing(slot -> slot.id));
         assignContainersToSlots(slots, containers, jsonObject);
-        
-        for (Slot slot : slots) {
-            slot.containers.removeAll(Collections.singleton(null));
-        }
         
         List<List<Slot>> area = makeArea(slots);
         List<Crane> cranes = readCranes(jsonObject);
@@ -80,20 +75,9 @@ public class Input {
             Container container = containers.get(((BigDecimal) assignment.get("container_id")).intValue());
             int slotId = ((BigDecimal) assignment.get("slot_id")).intValue();
 
-
-            Slot startSlot = slots.get(slotId);
-            int height = startSlot.containers.size();
-            for (int i = 0; i < startSlot.containers.size(); i++) {
-                if (startSlot.containers.get(i) == null) {
-                    height = i;
-                    break;
-                }
-            }
-
             for (int i = 0; i < container.length; i++) {
                 Slot slot = slots.get(slotId + i);
-                //int height = slots.get(slotId).containers.size();
-                container.assignSlot(slot, height);
+                container.assignSlot(slot);
             }
         }
     }
