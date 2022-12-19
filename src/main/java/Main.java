@@ -1,13 +1,15 @@
-import java.awt.event.HierarchyBoundsAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static List<Action> main() {
 
-        //Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
-        //Input input = new Input("instances/example/example.json");
-        Input input = new Input("instances/4mh/MH2Terminal_20_10_3_2_160.json");
+        //Input input = new Input("instances/1t/TerminalA_20_10_3_2_100.json");
+        //Input input = new Input("instances/3t/TerminalA_20_10_3_2_160.json");
+        Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
+        //Input input = new Input("instances/6t/Terminal_10_10_3_1_100.json");
+        //Input input = new Input("instances/2mh/MH2Terminal_20_10_3_2_100.json");
+        //Input input = new Input("instances/4mh/MH2Terminal_20_10_3_2_160.json");
 
         Terminal startTerminal = input.getTerminal();
         System.out.println(startTerminal.cranes.size());
@@ -15,7 +17,10 @@ public class Main {
         List<Action> result = new ArrayList<>();
 
         if (startTerminal.targetHeight == 0) {
+            //Input inputTarget = new Input("instances/1t/targetTerminalA_20_10_3_2_100.json");
+            //Input inputTarget = new Input("instances/3t/targetTerminalA_20_10_3_2_160.json");
             Input inputTarget = new Input("instances/5t/targetTerminalB_20_10_3_2_160.json");
+            //Input inputTarget = new Input("instances/6t/targetTerminal_10_10_3_1_100.json");
 
             Terminal endTerminal = inputTarget.getTerminal();
 
@@ -44,28 +49,21 @@ public class Main {
                         }
 
                         result.addAll(Recursion.makeSolution(startTerminal, startTerminal.slots.get(slotnumber), height, container));
+                    }
+                }
 
-//                        //check slot want in target staat hier een container
-//                        if (!(startTerminal.slots.get(slotnumber).containers.size() <= height)) {
-//                            //er staat een container
-//                            Container originalcontainer = startTerminal.slots.get(slotnumber).containers.get(height);
-//                            if (container.id != originalcontainer.id) {
-//                                //niet zelfde container, moet wijzigen
-//                                Algorithm.clearThisSlotAndLengthOfContainer(startTerminal, slotnumber, height, container);
-//                                //maak container vrij
-//                                Algorithm.prepareContainerMove(startTerminal, container);
-//                                //verplaats
-//                                Algorithm.moveContainerToTarget(startTerminal, container, endTerminal.slots.get(slotnumber).containers.get(height).slots);
-//                            }
-//                        }
-//                        else {
-//                            //er staat geen container, moet wijzigen
-//                            Algorithm.clearThisSlotAndLengthOfContainer(startTerminal, slotnumber, height, container);
-//                            //maak container vrij
-//                            Algorithm.prepareContainerMove(startTerminal, container);
-//                            //verplaats
-//                            Algorithm.moveContainerToTarget(startTerminal, container, endTerminal.slots.get(slotnumber).containers.get(height).slots);
-//                        }
+                for (int i = 0; i < startTerminal.slots.size(); i++) {
+                    Slot startSlot = startTerminal.slots.get(i);
+                    Slot endSlot = endTerminal.slots.get(i);
+                    if (endSlot.containers.size() > height) {
+                        if (startSlot.containers.size() <= height) {
+                            height -= 1;
+                            break;
+                        }
+                        if (startSlot.containers.get(height).id != endSlot.containers.get(height).id) {
+                            height -= 1;
+                            break;
+                        }
                     }
                 }
             }
