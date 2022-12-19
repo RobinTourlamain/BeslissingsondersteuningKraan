@@ -2,14 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    public static List<Action> main() {
+    public static List<Action> main(String filename) {
 
-        Input input = new Input("instances/1t/TerminalA_20_10_3_2_100.json");
-        //Input input = new Input("instances/3t/TerminalA_20_10_3_2_160.json");
-        //Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
-        //Input input = new Input("instances/6t/Terminal_10_10_3_1_100.json");
-        //Input input = new Input("instances/2mh/MH2Terminal_20_10_3_2_100.json");
-        //Input input = new Input("instances/4mh/MH2Terminal_20_10_3_2_160.json");
+        Input input = new Input(filename);
 
         Terminal startTerminal = input.getTerminal();
         System.out.println(startTerminal.cranes.size());
@@ -17,10 +12,11 @@ public class Main {
         List<Action> result = new ArrayList<>();
 
         if (startTerminal.targetHeight == 0) {
-            Input inputTarget = new Input("instances/1t/targetTerminalA_20_10_3_2_100.json");
-            //Input inputTarget = new Input("instances/3t/targetTerminalA_20_10_3_2_160.json");
-            //Input inputTarget = new Input("instances/5t/targetTerminalB_20_10_3_2_160.json");
-            //Input inputTarget = new Input("instances/6t/targetTerminal_10_10_3_1_100.json");
+
+            String[] filenameSplit = filename.split("/");
+            String targetFilename = filenameSplit[0] + "/" + filenameSplit[1] + "/" + "target" + filenameSplit[2];
+
+            Input inputTarget = new Input(targetFilename);
 
             Terminal endTerminal = inputTarget.getTerminal();
 

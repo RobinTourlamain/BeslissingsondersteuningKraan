@@ -38,12 +38,15 @@ public class Interface extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
 
-        Input input = new Input("instances/1t/TerminalA_20_10_3_2_100.json");
-        //Input input = new Input("instances/3t/TerminalA_20_10_3_2_160.json");
-        //Input input = new Input("instances/5t/TerminalB_20_10_3_2_160.json");
-        //Input input = new Input("instances/6t/Terminal_10_10_3_1_100.json");
-        //Input input = new Input("instances/2mh/MH2Terminal_20_10_3_2_100.json");
-        //Input input = new Input("instances/4mh/MH2Terminal_20_10_3_2_160.json");
+        //String filename = "instances/1t/TerminalA_20_10_3_2_100.json";
+        //String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
+        String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
+        //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
+        //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
+        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+
+        Input input = new Input(filename);
+
         Terminal startTerminal = input.getTerminal();
         int tlength = startTerminal.length;
         int twidth = startTerminal.width;
@@ -88,7 +91,7 @@ public class Interface extends Application {
         pane.getChildren().add(crane);
 
         //voer acties uit
-        List<Action> actions = Main.main(); //new ArrayList<>();
+        List<Action> actions = Main.main(filename);
         System.out.println("actionsize " + actions.size());
         SequentialTransition sequence = new SequentialTransition();
         int prior = 10000;
