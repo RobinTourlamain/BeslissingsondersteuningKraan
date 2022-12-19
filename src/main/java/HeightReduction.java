@@ -43,7 +43,6 @@ public class HeightReduction {
         if(!container.isMovable()) return false;
         int[] coords = craneHasRoomForContainer(terminal, crane, container);
         if(coords.length > 1){
-            System.out.println("room!");
             Action action = new Action(container, terminal.area.get(coords[0]).get(coords[1]));
             action.execute(terminal);
             result.add(action);
@@ -51,25 +50,72 @@ public class HeightReduction {
             return true;
         }
         System.out.println("no room!");
-        if(!otherCranesHaveRoom(terminal, crane, container)){
+        int room = otherCranesHaveRoom(terminal, crane, container);
+        if(room == 0){
             //TODO maak hierplaats
+            System.out.println("maakplaats!");
         }
-        else{
-
+        else if(!isInTransition(terminal, crane, container, room)){
+            return moveToTransitionZone(terminal, crane, container, result, room);
         }
 
         return false;
     }
 
-    public static boolean otherCranesHaveRoom(Terminal terminal, Crane notcrane, Container container){
+    public static boolean isInTransition(Terminal terminal, Crane crane, Container container, int room){
+        Crane secondcrane = terminal.cranes.get(crane.id + room);
+        int minx = Math.max(crane.xMin, secondcrane.xMin);
+        int maxx = Math.min(crane.xMax, secondcrane.xMax);
+
+        if(container.slots.get(0).x > minx && container.slots.get(0).x + container.length - 1 < maxx){
+            return true;
+        }
+        return false;
+    }
+
+    public  static boolean moveToTransitionZone(Terminal terminal, Crane crane, Container container, List<Action> result, int room){
+        Crane secondcrane = terminal.cranes.get(crane.id + room);
+        int minx = Math.max(crane.xMin, secondcrane.xMin);
+        int maxx = Math.min(crane.xMax, secondcrane.xMax);
+
+        //probeer in transition te zetten
+        for(int y = 0; y < terminal.width; y++){
+            for(int x = minx; x + container.length - 1 < maxx; x++){
+                List<Slot> slots = new ArrayList<>();
+                for(int i = 0; i<container.length; i++){
+                    slots.add(terminal.area.get(x+i).get(y));
+                }
+                if(container.isPlaceable(slots)){
+                    System.out.println("plaats in transition");
+                    Action action = new Action(container, terminal.area.get(x).get(y));
+                    action.execute(terminal);
+                    result.add(action);
+                    return true;
+                }
+            }
+        }
+        //maak transition vrij
+
+
+        return false;
+    }
+
+    //return -1 voor kraan links heeft plaats, 0 voor geen plaats, 1 voor rechts heeft plaats
+    public static int otherCranesHaveRoom(Terminal terminal, Crane notcrane, Container container){
         List<Crane> cranes = new ArrayList<>(terminal.cranes);
         cranes.remove(notcrane);
         for(Crane crane : cranes){
             if(craneHasRoomForContainer(terminal,crane,container).length > 1){
-                return true;
+                if(crane.id < notcrane.id){
+                    return -1;
+                }
+                else{
+                    return 1;
+                }
             }
         }
-        return false;
+        System.out.println("other crane has room");
+        return 0;
     }
     //returned [x, y] om opnieuw zoeken uit te sparen
     public static int[] craneHasRoomForContainer(Terminal terminal, Crane crane, Container container){
