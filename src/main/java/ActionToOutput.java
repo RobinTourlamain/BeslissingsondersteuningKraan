@@ -1,8 +1,11 @@
+import javafx.util.Pair;
+
 import java.util.*;
+import java.util.function.ToDoubleBiFunction;
 
 public class ActionToOutput {
 
-    public static List<Map<Integer, Action>> toOutput(List<Action> actionlist, List<Crane> cranes) {
+    public static List<List<OutputRecord>> toOutput(List<Action> actionlist, List<Crane> cranes) {
 
         List<Action> actions = new ArrayList<>(actionlist);
         List<Map<Integer, Action>> actionframes = new ArrayList<>();
@@ -28,7 +31,55 @@ public class ActionToOutput {
             System.out.print("crane " + key + " container " + value.container.id + " from x " + value.prevSlot.x + " to x " + value.slot.x + ", ");
         });
             System.out.println();});
-        return actionframes;
+
+        return toOutputRecords(actionframes, cranes);
+    }
+
+    public static List<List<OutputRecord>> toOutputRecords(List<Map<Integer, Action>> actionlist, List<Crane> cranes){
+        List<List<OutputRecord>> records = new ArrayList<>();
+        List<Map<Integer, Action>> actions = new ArrayList<>(actionlist);
+        double time = 0;
+        int index = 0;
+
+        for(Map<Integer, Action> map : actions){
+            records.add(new ArrayList<>());
+            double duration = 0;
+            for(Map.Entry<Integer, Action> entry : map.entrySet()){
+                //move crane to pickup duration
+                double xdurationcrane = Math.abs(cranes.get(entry.getKey()).x - entry.getValue().prevSlot.x) / cranes.get(entry.getKey()).speedX;
+                double ydurationcrane = Math.abs(cranes.get(entry.getKey()).y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
+                double pickupduration = Math.max(xdurationcrane, ydurationcrane);
+
+                //TODO move other cranes out of way
+
+                //get move duration
+                double xduration = Math.abs(entry.getValue().slot.x - entry.getValue().prevSlot.x) / cranes.get(entry.getKey()).speedX;
+                double yduration = Math.abs(entry.getValue().slot.y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
+                double moveduration = Math.max(xduration, yduration);
+
+                if(pickupduration + moveduration > duration){
+                    duration = pickupduration + moveduration;
+                }
+
+                //add record
+                records.get(index).add(
+                        new OutputRecord(
+                                entry.getKey(),
+                                entry.getValue().container.id,
+                                time + pickupduration,
+                                time + pickupduration + moveduration,
+                                entry.getValue().prevSlot.x + entry.getValue().container.length/2,
+                                entry.getValue().prevSlot.y + 0.5,
+                                entry.getValue().slot.x + entry.getValue().container.length/2,
+                                entry.getValue().slot.y + 0.5,
+                                entry.getValue()
+                                )
+                );
+            }
+            time += duration;
+            index++;
+        }
+        return records;
     }
 
     public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index) {

@@ -7,10 +7,11 @@ public class OutputRecord {
     public double pposy;
     public double eposx;
     public double eposy;
+    public Action action;
 
     public OutputRecord(){}
 
-    public OutputRecord(int craneid, int cid, double ptime, double etime, double pposx, double pposy, double eposx, double eposy) {
+    public OutputRecord(int craneid, int cid, double ptime, double etime, double pposx, double pposy, double eposx, double eposy, Action action) {
         this.craneid = craneid;
         this.cid = cid;
         this.ptime = ptime;
@@ -19,5 +20,6 @@ public class OutputRecord {
         this.pposy = pposy;
         this.eposx = eposx;
         this.eposy = eposy;
+        this.action = action;
     }
 }

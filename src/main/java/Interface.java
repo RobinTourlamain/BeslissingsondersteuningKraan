@@ -40,7 +40,7 @@ public class Interface extends Application {
         primaryStage.show();
 
         //String filename = "instances/1t/TerminalA_20_10_3_2_100.json";
-        //String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
+        String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
         //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
         //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
         //String filename = "instances/7t/TerminalC_10_10_3_2_80.json";
@@ -48,7 +48,7 @@ public class Interface extends Application {
         //String filename = "instances/9t/TerminalC_10_10_3_2_100.json";
         //String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
         //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         Input input = new Input(filename);
 
@@ -86,69 +86,133 @@ public class Interface extends Application {
         }
 
         //plot kranen
-        Rectangle crane = new Rectangle();
-        crane.heightProperty().bind(pane.heightProperty().divide(twidth).divide(2));
-        crane.widthProperty().bind(pane.widthProperty().divide(tlength).divide(2));
-        crane.setViewOrder(0);
+        for(Crane c: startTerminal.cranes){
+            Rectangle crane = new Rectangle();
+            crane.heightProperty().bind(pane.heightProperty().divide(twidth).divide(2));
+            crane.widthProperty().bind(pane.widthProperty().divide(tlength).divide(2));
+            crane.translateXProperty().set(pane.getWidth()/tlength * c.x - crane.getWidth()/2);
+            crane.translateYProperty().set(pane.getHeight()/twidth * c.y - crane.getHeight()/2);
+            crane.setId("c" + c.id);
+            crane.setViewOrder(0);
 
-        Rectangle frame = new Rectangle();
-        frame.heightProperty().bind(pane.heightProperty());
-        frame.widthProperty().bind(pane.widthProperty().divide(tlength).divide(4));
-        frame.translateXProperty().bind(crane.translateXProperty().add(crane.widthProperty().divide(4)));
-        frame.setViewOrder(0);
+            Rectangle frame = new Rectangle();
+            frame.heightProperty().bind(pane.heightProperty());
+            frame.widthProperty().bind(pane.widthProperty().divide(tlength).divide(4));
+            frame.translateXProperty().bind(crane.translateXProperty().add(crane.widthProperty().divide(4)));
+            frame.setViewOrder(0);
 
-        pane.getChildren().add(frame);
-        pane.getChildren().add(crane);
+            pane.getChildren().add(frame);
+            pane.getChildren().add(crane);
+        }
 
         //voer acties uit
         List<Action> actions = Main.main(filename);
         System.out.println("actionsize " + actions.size());
-        ActionToOutput.toOutput(actions, startTerminal.cranes);
+        List<List<OutputRecord>> records =  ActionToOutput.toOutput(actions, startTerminal.cranes);
         SequentialTransition sequence = new SequentialTransition();
         int prior = 10000;
-        for (Action action : actions) {
-            String id = "#" + action.container.id;
-            Rectangle rectangle = (Rectangle) pane.lookup(id);
-            List<Text> textsource = new ArrayList<>();
-            List<Text> textdestination = new ArrayList<>();
-            for (int i = 0; i < action.container.length; i++) {
-                textsource.add((Text) pane.lookup("#h" + (action.prevSlot.id + i)));
-                textdestination.add((Text) pane.lookup("#h" + (action.slot.id + i)));
+        double time = 0;
+
+        for(List<OutputRecord> batch : records){
+            Timeline pickup = new Timeline();
+            Timeline move = new Timeline();
+            double duration = 0;
+
+            for(OutputRecord record : batch){
+                Rectangle rectangle = (Rectangle) pane.lookup("#" + record.action.container.id);
+                Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneid);
+                List<Text> textsource = new ArrayList<>();
+                List<Text> textdestination = new ArrayList<>();
+
+                for (int i = 0; i < record.action.container.length; i++) {
+                    textsource.add((Text) pane.lookup("#h" + (record.action.prevSlot.id + i)));
+                    textdestination.add((Text) pane.lookup("#h" + (record.action.slot.id + i)));
+                }
+
+                //movement kraan naar container
+                KeyValue pickupx = new KeyValue(crane.translateXProperty(), pane.getWidth()/tlength*record.pposx - crane.getWidth()/2);
+                KeyValue pickupy = new KeyValue(crane.translateYProperty(), pane.getHeight()/twidth*record.pposy - crane.getHeight()/2);
+                int finalPrior = prior;
+                KeyFrame pickupframe = new KeyFrame(Duration.seconds(record.ptime - time), actionEvent -> {
+                    rectangle.toFront();
+                    rectangle.setViewOrder(finalPrior);
+                    for (Text text : textsource) {
+                        text.setText(String.valueOf(Integer.parseInt(text.getText()) - 1));
+                    }
+                }, pickupx, pickupy);
+                prior--;
+                pickup.getKeyFrames().add(pickupframe);
+
+                //movement container
+                KeyValue keyValuex = new KeyValue(rectangle.translateXProperty(), pane.getWidth()/tlength*record.action.slot.x);
+                KeyValue keyValuey = new KeyValue(rectangle.translateYProperty(), pane.getHeight()/twidth*record.action.slot.y);
+                KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.eposx - crane.getWidth()/2);
+                KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*record.eposy - crane.getHeight()/2);
+
+                KeyFrame moveframe = new KeyFrame(Duration.seconds(record.etime-record.ptime), actionEvent -> {
+                    for (Text text : textdestination) {
+                        text.setText(String.valueOf(Integer.parseInt(text.getText()) + 1));
+                    }
+                }, keyValuex, keyValuey, keyValuecranex, keyValuecraney);
+                move.getKeyFrames().add(moveframe);
+
+                //set duration
+                if(record.ptime - time + record.etime-record.ptime > duration){
+                    duration = record.ptime - time + record.etime-record.ptime;
+                }
             }
 
-            KeyValue keyValueposx = new KeyValue(crane.translateXProperty(), rectangle.getTranslateX() + (rectangle.getWidth()/2));
-            KeyValue keyValueposy = new KeyValue(crane.translateYProperty(), rectangle.getTranslateY() + (rectangle.getHeight()/2));
+            sequence.getChildren().add(pickup);
+            sequence.getChildren().add(move);
 
-            int finalPrior = prior;
-            KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), actionEvent -> {
-                rectangle.toFront();
-                rectangle.setViewOrder(finalPrior);
-                for (Text text : textsource) {
-                    text.setText(String.valueOf(Integer.parseInt(text.getText()) - 1));
-                }
-            }, keyValueposx, keyValueposy);
-            prior--;
-
-            Timeline timeline1 = new Timeline(keyFramepos);
-            sequence.getChildren().add(timeline1);
-
-            KeyValue keyValuex = new KeyValue(rectangle.translateXProperty(), pane.getWidth()/tlength*action.slot.x);
-            KeyValue keyValuey = new KeyValue(rectangle.translateYProperty(), pane.getHeight()/twidth*action.slot.y);
-            KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*(action.slot.x + 0.5)-crane.getWidth()/2);
-            KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*(action.slot.y + 0.5)-crane.getHeight()/2);
-
-            KeyFrame keyFrame = new KeyFrame(Duration.seconds(2), actionEvent -> {
-                for (Text text : textdestination) {
-                    text.setText(String.valueOf(Integer.parseInt(text.getText()) + 1));
-                }
-            }, keyValuex, keyValuey, keyValuecranex, keyValuecraney);
-            Timeline timeline2 = new Timeline(keyFrame);
-            sequence.getChildren().add(timeline2);
-            rectangle.toFront();
-            crane.toFront();
-            frame.toFront();
+            time += duration;
         }
+
         sequence.play();
+
+//        for (Action action : actions) {
+//            String id = "#" + action.container.id;
+//            Rectangle rectangle = (Rectangle) pane.lookup(id);
+//            List<Text> textsource = new ArrayList<>();
+//            List<Text> textdestination = new ArrayList<>();
+//            for (int i = 0; i < action.container.length; i++) {
+//                textsource.add((Text) pane.lookup("#h" + (action.prevSlot.id + i)));
+//                textdestination.add((Text) pane.lookup("#h" + (action.slot.id + i)));
+//            }
+//
+//            KeyValue keyValueposx = new KeyValue(crane.translateXProperty(), rectangle.getTranslateX() + (rectangle.getWidth()/2));
+//            KeyValue keyValueposy = new KeyValue(crane.translateYProperty(), rectangle.getTranslateY() + (rectangle.getHeight()/2));
+//
+//            int finalPrior = prior;
+//            KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), actionEvent -> {
+//                rectangle.toFront();
+//                rectangle.setViewOrder(finalPrior);
+//                for (Text text : textsource) {
+//                    text.setText(String.valueOf(Integer.parseInt(text.getText()) - 1));
+//                }
+//            }, keyValueposx, keyValueposy);
+//            prior--;
+//
+//            Timeline timeline1 = new Timeline(keyFramepos);
+//            sequence.getChildren().add(timeline1);
+//
+//            KeyValue keyValuex = new KeyValue(rectangle.translateXProperty(), pane.getWidth()/tlength*action.slot.x);
+//            KeyValue keyValuey = new KeyValue(rectangle.translateYProperty(), pane.getHeight()/twidth*action.slot.y);
+//            KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*(action.slot.x + 0.5)-crane.getWidth()/2);
+//            KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*(action.slot.y + 0.5)-crane.getHeight()/2);
+//
+//            KeyFrame keyFrame = new KeyFrame(Duration.seconds(2), actionEvent -> {
+//                for (Text text : textdestination) {
+//                    text.setText(String.valueOf(Integer.parseInt(text.getText()) + 1));
+//                }
+//            }, keyValuex, keyValuey, keyValuecranex, keyValuecraney);
+//            Timeline timeline2 = new Timeline(keyFrame);
+//            sequence.getChildren().add(timeline2);
+//            rectangle.toFront();
+//            crane.toFront();
+//            frame.toFront();
+//        }
+//        sequence.play();
     }
 
     public Rectangle newContainer(Pane pane, int tlength, int twidth, int i, int j, int index, int length, int prior) {
