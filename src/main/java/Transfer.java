@@ -7,7 +7,7 @@ public class Transfer {
 
         boolean resultFound = false;
         int depth = 1;
-        while (!resultFound && depth <= 20) {
+        while (!resultFound && depth <= 50) {
             resultFound = recursion(result, terminal, currentSlot, height, container, depth);
             depth++;
         }
@@ -160,14 +160,22 @@ public class Transfer {
 //            xMax += 1;
 //        }
 
-        transferRecursion(result, terminal, container, currentSlot, xMin, xMax);
+        boolean resultFound = false;
+        int depth = 1;
+        while (!resultFound && depth <= 50) {
+            resultFound = transferRecursion(result, terminal, container, currentSlot, xMin, xMax, depth);
+            depth++;
+        }
 
         return result;
     }
 
-    public static boolean transferRecursion(List<Action> result, Terminal terminal, Container container, Slot currentSlot, int xMin, int xMax) {
+    public static boolean transferRecursion(List<Action> result, Terminal terminal, Container container, Slot currentSlot, int xMin, int xMax, int depth) {
         Slot transferSlot = Algorithm.findTransferSlot(terminal, container);
         if (transferSlot == null) {
+            if (depth <= 0) {
+                return false;
+            }
             List<Action> actions = getPossibleTransferMoves(terminal, container, xMin, xMax);
             if (actions.isEmpty()) {
                 return false;
@@ -175,7 +183,7 @@ public class Transfer {
             for (Action action : actions) {
                 result.add(action);
                 action.execute(terminal);
-                if (transferRecursion(result, terminal, container, currentSlot, xMin, xMax)) {
+                if (transferRecursion(result, terminal, container, currentSlot, xMin, xMax, depth - 1)) {
                     Action restore = new Action(action.container, action.prevSlot);
                     result.add(restore);
                     restore.execute(terminal);

@@ -2,20 +2,19 @@ import java.util.*;
 
 public class ActionToOutput {
 
-    public static List<Map<Integer, Action>> toOutput(List<Action> actionlist, List<Crane> cranes){
+    public static List<Map<Integer, Action>> toOutput(List<Action> actionlist, List<Crane> cranes) {
 
         List<Action> actions = new ArrayList<>(actionlist);
         List<Map<Integer, Action>> actionframes = new ArrayList<>();
 
         //bepaal welke acties in parallel gebeuren
         int index = 0;
-        while(!actions.isEmpty()){
-            actionframes.add(new HashMap());
-            for(Crane crane : cranes){
-
-                for(int i = 0; i < actions.size(); i++){
+        while (!actions.isEmpty()) {
+            actionframes.add(new HashMap<>());
+            for (Crane crane : cranes) {
+                for (int i = 0; i < actions.size(); i++) {
                     Action action = actions.get(i);
-                    if(canExecute(crane, action) && !overlapWithOtherActions(action, actionframes.get(index), actions, i)){
+                    if (canExecute(crane, action) && !overlapWithOtherActions(action, actionframes.get(index), actions, i)) {
                         actionframes.get(index).put(crane.id, action);
                         actions.remove(action);
                         break;
@@ -25,21 +24,21 @@ public class ActionToOutput {
             index++;
         }
 
-        actionframes.forEach(m -> {m.forEach((key, value)->{
+        actionframes.forEach(m -> {m.forEach((key, value)-> {
             System.out.print("crane " + key + " container " + value.container.id + " from x " + value.prevSlot.x + " to x " + value.slot.x + ", ");
         });
             System.out.println();});
         return actionframes;
     }
 
-    public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index){
+    public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index) {
 
-        if(craneactions.isEmpty()){
+        if (craneactions.isEmpty()) {
             return false;
         }
 
         List<Action> consider = new ArrayList<>(craneactions.values());
-        for(int i = 0; i < index; i++){
+        for (int i = 0; i < index; i++) {
             consider.add(actions.get(i));
         }
 
@@ -53,7 +52,7 @@ public class ActionToOutput {
 
 
 
-        for(Action a : consider){
+        for (Action a : consider) {
             List<Integer> compareslots = new ArrayList<>();
             compareslots.add(a.slot.x);
             compareslots.add(a.slot.x + a.container.length - 1);
@@ -62,7 +61,7 @@ public class ActionToOutput {
             int leftmostslotc = Collections.min(compareslots);
             int rightmostslotc = Collections.max(compareslots);
 
-            if(leftmostslot <= rightmostslotc && rightmostslot >= leftmostslotc){
+            if (leftmostslot <= rightmostslotc && rightmostslot >= leftmostslotc) {
                 System.out.println("overlap");
                 return true;
             }
@@ -70,7 +69,7 @@ public class ActionToOutput {
         return false;
     }
 
-    public static boolean canExecute(Crane crane, Action action){
+    public static boolean canExecute(Crane crane, Action action) {
         List<Integer> slots = new ArrayList<>();
         slots.add(action.slot.x);
         slots.add(action.slot.x + action.container.length - 1);
@@ -80,11 +79,16 @@ public class ActionToOutput {
         int leftmostslot = Collections.min(slots);
         int rightmostslot = Collections.max(slots);
 
-        if(crane.xMin <= leftmostslot && rightmostslot <= crane.xMax){
+        if (action.container.length > 1) {
+            leftmostslot++;
+            rightmostslot--;
+        }
+
+        if (crane.xMin <= leftmostslot && rightmostslot <= crane.xMax) {
             return true;
         }
         System.out.println("kan niet executen");
-        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax);
+        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + "length: " + action.container.length);
         return false;
     }
 
