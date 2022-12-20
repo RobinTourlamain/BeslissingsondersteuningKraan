@@ -44,10 +44,10 @@ public class Algorithm {
         int xMin = craneCopy.get(1).xMin;
         int xMax = craneCopy.get(0).xMax;
 
-//        if (container.length > 1) {
-//            xMin -= 1;
-//            xMax += 1;
-//        }
+        if (container.length > 1) {
+            xMin -= 1;
+            xMax += 1;
+        }
 
         for (int y = 0; y < terminal.width; y++) {
             for (int x = xMin; x + container.length < xMax; x++) {
@@ -67,14 +67,14 @@ public class Algorithm {
             int xMin = crane.xMin;
             int xMax = crane.xMax;
 
-//            if (container.length > 1) {
-//                if (xMin == 0) {
-//                    xMax += 1;
-//                }
-//                if (xMax == terminal.length) {
-//                    xMin -= 1;
-//                }
-//            }
+            if (container.length > 1) {
+                if (xMin == 0) {
+                    xMax += 1;
+                }
+                if (xMax == terminal.length) {
+                    xMin -= 1;
+                }
+            }
 
             Slot containerSlot = container.slots.get(0);
             if (xMin <= containerSlot.x && containerSlot.x <= xMax && xMin <= currentSlot.x && currentSlot.x <= xMax) {

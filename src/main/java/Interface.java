@@ -39,16 +39,16 @@ public class Interface extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
 
-        //String filename = "instances/1t/TerminalA_20_10_3_2_100.json"; //juist
-        String filename = "instances/3t/TerminalA_20_10_3_2_160.json"; //juist
-        //String filename = "instances/5t/TerminalB_20_10_3_2_160.json"; //foute pickup + neemt container vanonder??
-        //String filename = "instances/6t/Terminal_10_10_3_1_100.json"; //juist
-        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json"; //juist
+        //String filename = "instances/1t/TerminalA_20_10_3_2_100.json";
+        String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
+        //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
+        //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
+        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json";
         //String filename = "instances/8t/TerminalC_10_10_3_2_80.json";
         //String filename = "instances/9t/TerminalC_10_10_3_2_100.json";
         //String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
-        //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json"; //juist
-        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json"; //juist
+        //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
+        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         Input input = new Input(filename);
 
@@ -119,6 +119,16 @@ public class Interface extends Application {
             double duration = 0;
 
             for(OutputRecord record : batch){
+                //safety distance related?
+                if(record.cid == -1){
+                    Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneid);
+                    KeyValue safetyx = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.eposx - crane.getWidth()/2);
+                    KeyFrame safetyframe = new KeyFrame(Duration.seconds(1),safetyx);
+                    pickup.getKeyFrames().add(safetyframe);
+                    continue;
+                }
+
+                //actual move
                 Rectangle rectangle = (Rectangle) pane.lookup("#" + record.action.container.id);
                 Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneid);
                 List<Text> textsource = new ArrayList<>();
