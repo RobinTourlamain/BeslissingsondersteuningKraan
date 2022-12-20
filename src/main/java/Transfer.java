@@ -50,7 +50,7 @@ public class Transfer {
         }
         else {
             if (Algorithm.staysWithinOneCraneArea(terminal, container, currentSlot) || terminal.cranes.size() == 1) {
-                Action finalMove = new Action(container, currentSlot);
+                Action finalMove = new Action(container, currentSlot, "final place one crane");
                 finalMove.execute(terminal);
                 result.add(finalMove);
                 System.out.println(container.id + " moved successfully");
@@ -89,7 +89,7 @@ public class Transfer {
                 for (int x = 0; x + blockingContainer.length < terminal.length; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), container, x, y)) {
                         assert terminal.area.get(x).get(y).id + blockingContainer.length < terminal.slots.size();
-                        actions.add(new Action(blockingContainer, terminal.area.get(x).get(y)));
+                        actions.add(new Action(blockingContainer, terminal.area.get(x).get(y), "move blocking"));
                     }
                 }
             }
@@ -112,11 +112,25 @@ public class Transfer {
 
         List<Action> moveActions = new ArrayList<>();
         for (Container movableContainer : movableContainers) {
+            int xMin = 0;
+            int xMax = terminal.length;
+
+            if (terminal.cranes.size() > 1) {
+                for (Crane crane : terminal.cranes) {
+                    Slot containerSlot = movableContainer.slots.get(0);
+                    if (crane.xMin <= containerSlot.x && containerSlot.x + movableContainer.length <= crane.xMax) {
+                        xMin = crane.xMin;
+                        xMax = crane.xMax;
+                        break;
+                    }
+                }
+            }
+
             for (int y = 0; y < terminal.width; y++) {
-                for (int x = 0; x + movableContainer.length < terminal.length; x++) {
+                for (int x = xMin; x + movableContainer.length < xMax; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), container, x, y)) {
                         assert terminal.area.get(x).get(y).id + movableContainer.length <= terminal.slots.size();
-                        moveActions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
+                        moveActions.add(new Action(movableContainer, terminal.area.get(x).get(y), " random move stuck"));
                     }
                 }
             }
@@ -184,7 +198,7 @@ public class Transfer {
                 result.add(action);
                 action.execute(terminal);
                 if (transferRecursion(result, terminal, container, currentSlot, xMin, xMax, depth - 1)) {
-                    Action restore = new Action(action.container, action.prevSlot);
+                    Action restore = new Action(action.container, action.prevSlot, "restore");
                     result.add(restore);
                     restore.execute(terminal);
 
@@ -196,11 +210,11 @@ public class Transfer {
             return false;
         }
         else {
-            Action transferMove = new Action(container, transferSlot);
+            Action transferMove = new Action(container, transferSlot, "prepare transfer 2 cranes");
             transferMove.execute(terminal);
             result.add(transferMove);
             System.out.println("transfer");
-            Action finalMove = new Action(container, currentSlot);
+            Action finalMove = new Action(container, currentSlot, "actual transfer 2 cranes");
             finalMove.execute(terminal);
             result.add(finalMove);
             System.out.println(container.id + " moved successfully");
@@ -217,7 +231,7 @@ public class Transfer {
                 Slot slot = terminal.area.get(x).get(y);
                 if (slot.containers.size() != 0) {
                     Container topContainer = slot.containers.peek();
-                    if (x + topContainer.length - 1 < xMax) {
+                    if (x + topContainer.length < xMax) {
                         if (topContainer.isMovable()) {
                             movableContainers.add(topContainer);
                         }
@@ -230,7 +244,7 @@ public class Transfer {
             for (int y = 0; y < terminal.width; y++) {
                 for (int x = 0; x + movableContainer.length < terminal.length; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(), container, x, y)) {
-                        actions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
+                        actions.add(new Action(movableContainer, terminal.area.get(x).get(y), "transfer move out of the way"));
                     }
                 }
             }

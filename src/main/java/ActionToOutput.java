@@ -1,7 +1,4 @@
-import javafx.util.Pair;
-
 import java.util.*;
-import java.util.function.ToDoubleBiFunction;
 
 public class ActionToOutput {
 
@@ -84,10 +81,6 @@ public class ActionToOutput {
 
     public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index) {
 
-//        if (craneactions.isEmpty()) {
-//            return false;
-//        }
-
         List<Action> consider = new ArrayList<>(craneactions.values());
         for (int i = 0; i < index; i++) {
             consider.add(actions.get(i));
@@ -113,7 +106,7 @@ public class ActionToOutput {
             int rightmostslotc = Collections.max(compareslots);
 
             if (leftmostslot <= rightmostslotc && rightmostslot >= leftmostslotc) {
-//                System.out.println("overlap");
+                System.out.println("overlap");
                 return true;
             }
         }
@@ -138,8 +131,8 @@ public class ActionToOutput {
         if (crane.xMin <= leftmostslot && rightmostslot <= crane.xMax) {
             return true;
         }
-//        System.out.println("kan niet executen");
-//        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + "length: " + action.container.length);
+        System.out.println("kan niet executen");
+        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + " length: " + action.container.length + action.string);
         return false;
     }
 
