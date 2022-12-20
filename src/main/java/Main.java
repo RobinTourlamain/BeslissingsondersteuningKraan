@@ -63,13 +63,14 @@ public class Main {
             }
             if (!mistakeFound) {
                 System.out.println("all correct");
+                result.forEach(action -> System.out.println("container " + action.container.id + " naar x " + action.slot.x));
                 return result;
             }
         }
         else {
             System.out.println(Algorithm.findContainersAboveMaxHeight(startTerminal).size());
             result.addAll(HeightReduction.makeSolution(startTerminal));
-            result.forEach(action -> System.out.println("container " + action.container.id + " naar slot " + action.slot.id));
+            result.forEach(action -> System.out.println("container " + action.container.id + " naar x " + action.slot.x));
 
             boolean mistakeFound = false;
             for (Slot slot : startTerminal.slots) {

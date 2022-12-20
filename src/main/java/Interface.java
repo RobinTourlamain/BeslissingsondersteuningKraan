@@ -39,16 +39,16 @@ public class Interface extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
 
-        //String filename = "instances/1t/TerminalA_20_10_3_2_100.json";
-        String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
-        //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
-        //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
-        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json";
+        //String filename = "instances/1t/TerminalA_20_10_3_2_100.json"; //juist
+        String filename = "instances/3t/TerminalA_20_10_3_2_160.json"; //juist
+        //String filename = "instances/5t/TerminalB_20_10_3_2_160.json"; //foute pickup + neemt container vanonder??
+        //String filename = "instances/6t/Terminal_10_10_3_1_100.json"; //juist
+        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json"; //juist
         //String filename = "instances/8t/TerminalC_10_10_3_2_80.json";
         //String filename = "instances/9t/TerminalC_10_10_3_2_100.json";
         //String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
-        //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json"; //juist
+        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json"; //juist
 
         Input input = new Input(filename);
 
@@ -130,8 +130,8 @@ public class Interface extends Application {
                 }
 
                 //movement kraan naar container
-                KeyValue pickupx = new KeyValue(crane.translateXProperty(), pane.getWidth()/tlength*record.pposx - crane.getWidth()/2);
-                KeyValue pickupy = new KeyValue(crane.translateYProperty(), pane.getHeight()/twidth*record.pposy - crane.getHeight()/2);
+                KeyValue pickupx = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.pposx - crane.getWidth()/2);
+                KeyValue pickupy = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*record.pposy - crane.getHeight()/2);
                 int finalPrior = prior;
                 KeyFrame pickupframe = new KeyFrame(Duration.seconds(record.ptime - time), actionEvent -> {
                     rectangle.toFront();
@@ -143,9 +143,10 @@ public class Interface extends Application {
                 prior--;
                 pickup.getKeyFrames().add(pickupframe);
 
+
                 //movement container
-                KeyValue keyValuex = new KeyValue(rectangle.translateXProperty(), pane.getWidth()/tlength*record.action.slot.x);
-                KeyValue keyValuey = new KeyValue(rectangle.translateYProperty(), pane.getHeight()/twidth*record.action.slot.y);
+                KeyValue keyValuex = new KeyValue(rectangle.translateXProperty(), (pane.getWidth()/tlength)*record.action.slot.x);
+                KeyValue keyValuey = new KeyValue(rectangle.translateYProperty(), (pane.getHeight()/twidth)*record.action.slot.y);
                 KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.eposx - crane.getWidth()/2);
                 KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*record.eposy - crane.getHeight()/2);
 
@@ -157,8 +158,8 @@ public class Interface extends Application {
                 move.getKeyFrames().add(moveframe);
 
                 //set duration
-                if(record.ptime - time + record.etime-record.ptime > duration){
-                    duration = record.ptime - time + record.etime-record.ptime;
+                if(record.etime - time > duration){
+                    duration = record.etime - time;
                 }
             }
 

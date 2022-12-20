@@ -53,8 +53,8 @@ public class ActionToOutput {
                 //TODO move other cranes out of way
 
                 //get move duration
-                double xduration = Math.abs(entry.getValue().slot.x - entry.getValue().prevSlot.x) / cranes.get(entry.getKey()).speedX;
-                double yduration = Math.abs(entry.getValue().slot.y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
+                double xduration = Math.abs((double)entry.getValue().slot.x - entry.getValue().prevSlot.x) / cranes.get(entry.getKey()).speedX;
+                double yduration = Math.abs((double)entry.getValue().slot.y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
                 double moveduration = Math.max(xduration, yduration);
 
                 if(pickupduration + moveduration > duration){
@@ -68,9 +68,9 @@ public class ActionToOutput {
                                 entry.getValue().container.id,
                                 time + pickupduration,
                                 time + pickupduration + moveduration,
-                                entry.getValue().prevSlot.x + entry.getValue().container.length/2,
+                                entry.getValue().prevSlot.x + (double)(entry.getValue().container.length)/2,
                                 entry.getValue().prevSlot.y + 0.5,
-                                entry.getValue().slot.x + entry.getValue().container.length/2,
+                                entry.getValue().slot.x + (double)(entry.getValue().container.length)/2,
                                 entry.getValue().slot.y + 0.5,
                                 entry.getValue()
                                 )
@@ -84,9 +84,9 @@ public class ActionToOutput {
 
     public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index) {
 
-        if (craneactions.isEmpty()) {
-            return false;
-        }
+//        if (craneactions.isEmpty()) {
+//            return false;
+//        }
 
         List<Action> consider = new ArrayList<>(craneactions.values());
         for (int i = 0; i < index; i++) {
@@ -113,7 +113,7 @@ public class ActionToOutput {
             int rightmostslotc = Collections.max(compareslots);
 
             if (leftmostslot <= rightmostslotc && rightmostslot >= leftmostslotc) {
-                System.out.println("overlap");
+//                System.out.println("overlap");
                 return true;
             }
         }
@@ -138,8 +138,8 @@ public class ActionToOutput {
         if (crane.xMin <= leftmostslot && rightmostslot <= crane.xMax) {
             return true;
         }
-        System.out.println("kan niet executen");
-        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + "length: " + action.container.length);
+//        System.out.println("kan niet executen");
+//        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + "length: " + action.container.length);
         return false;
     }
 
