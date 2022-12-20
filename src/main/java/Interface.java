@@ -43,7 +43,7 @@ public class Interface extends Application {
         //String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
         //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
         //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
-        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json";
+        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json"; //demo
         //String filename = "instances/8t/TerminalC_10_10_3_2_80.json";
         //String filename = "instances/9t/TerminalC_10_10_3_2_100.json";
         //String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
@@ -123,7 +123,7 @@ public class Interface extends Application {
                 if(record.cid == -1){
                     Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneid);
                     KeyValue safetyx = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.eposx - crane.getWidth()/2);
-                    KeyFrame safetyframe = new KeyFrame(Duration.seconds(1),safetyx);
+                    KeyFrame safetyframe = new KeyFrame(Duration.seconds(2),safetyx);
                     pickup.getKeyFrames().add(safetyframe);
                     continue;
                 }

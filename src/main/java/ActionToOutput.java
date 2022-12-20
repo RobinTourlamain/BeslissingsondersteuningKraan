@@ -1,8 +1,4 @@
-import javafx.util.Pair;
-
 import java.util.*;
-import java.util.function.ToDoubleBiFunction;
-
 public class ActionToOutput {
 
     public static List<List<OutputRecord>> toOutput(List<Action> actionlist, List<Crane> cranes) {
@@ -50,8 +46,6 @@ public class ActionToOutput {
                 double ydurationcrane = Math.abs(cranes.get(entry.getKey()).y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
                 double pickupduration = Math.max(xdurationcrane, ydurationcrane);
 
-                //TODO move other cranes out of way
-
                 //get move duration
                 double xduration = Math.abs((double)entry.getValue().slot.x - entry.getValue().prevSlot.x) / cranes.get(entry.getKey()).speedX;
                 double yduration = Math.abs((double)entry.getValue().slot.y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
@@ -76,17 +70,58 @@ public class ActionToOutput {
                                 )
                 );
             }
+
+            //move cranes without task out of way
+            for(Crane crane : cranes){
+                if(!map.containsKey(crane.id)){
+                    List<Integer> safezone = getSafeSpaces(crane, map, cranes).stream().toList();
+                    int safe;
+                    if(crane.id > cranes.size()/2){
+                        safe = safezone.get(0);
+                    }
+                    else{
+                        safe = safezone.get(safezone.size()-1);
+                    }
+                    records.get(index).add(
+                            new OutputRecord(
+                                    crane.id,
+                                    -1,
+                                    time + 1,
+                                    time + 2,
+                                    -1,   //TODO moet vorige ppos zijn
+                                    -1,
+                                    safe,
+                                    -1,
+                                    null
+                            )
+                    );
+                }
+            }
+
             time += duration;
             index++;
         }
         return records;
     }
 
-    public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index) {
+    public  static Set<Integer> getSafeSpaces(Crane crane, Map<Integer, Action> actions, List<Crane> cranes){
+        Set<Integer> range = new HashSet<>();
+        for(int i = crane.xMin; i < crane.xMax; i++){
+            range.add(i);
+        }
+        List<Crane> tasked = new ArrayList<>();
+        actions.keySet().forEach(integer -> {tasked.add(cranes.get(integer));});
+        for(Crane tc : tasked){
+            Set<Integer> newrange = new HashSet<>();
+            for(int i = tc.xMin; i < tc.xMax; i++){
+                newrange.add(i);
+            }
+            range.removeAll(newrange);
+        }
+        return range;
+    }
 
-//        if (craneactions.isEmpty()) {
-//            return false;
-//        }
+    public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index) {
 
         List<Action> consider = new ArrayList<>(craneactions.values());
         for (int i = 0; i < index; i++) {
@@ -101,8 +136,6 @@ public class ActionToOutput {
         int leftmostslot = Collections.min(slots);
         int rightmostslot = Collections.max(slots);
 
-
-
         for (Action a : consider) {
             List<Integer> compareslots = new ArrayList<>();
             compareslots.add(a.slot.x);
@@ -113,7 +146,10 @@ public class ActionToOutput {
             int rightmostslotc = Collections.max(compareslots);
 
             if (leftmostslot <= rightmostslotc && rightmostslot >= leftmostslotc) {
-//                System.out.println("overlap");
+                System.out.println("overlap: " + leftmostslot + "," + rightmostslot + " binnen: " + leftmostslotc + "," + rightmostslotc + " lengte: " + a.container.length);
+                craneactions.forEach((key, value)-> {
+                    System.out.println(key + " " + value.container.id  + " tussen " + value.slot.x + ", " + value.prevSlot.x );
+                });
                 return true;
             }
         }
@@ -136,10 +172,11 @@ public class ActionToOutput {
         }
 
         if (crane.xMin <= leftmostslot && rightmostslot <= crane.xMax) {
+            System.out.println("kan executen: " + action.container.id + " naar x " + action.container.slots.get(0).x);
             return true;
         }
-//        System.out.println("kan niet executen");
-//        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + "length: " + action.container.length);
+        System.out.println("kan niet executen");
+        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + "length: " + action.container.length);
         return false;
     }
 

@@ -117,7 +117,7 @@ public class HeightReduction {
 
         //probeer in transition te zetten
         for (int y = 0; y < terminal.width; y++) {
-            for (int x = minx; x + container.length - 1 < maxx; x++) {
+            for (int x = minx; x + container.length - 1 <= maxx; x++) {
                 List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i<container.length; i++) {
                     slots.add(terminal.area.get(x+i).get(y));
@@ -184,6 +184,11 @@ public class HeightReduction {
         List<Integer> slots = container.slots.stream().map(slot -> slot.x).toList();
         int leftmostslot = Collections.min(slots);
         int rightmostslot = leftmostslot + container.length - 1;
+
+        if (container.length > 1) {
+            leftmostslot++;
+            rightmostslot--;
+        }
 
         return crane.xMin <= leftmostslot && crane.xMax >= rightmostslot;
     }
