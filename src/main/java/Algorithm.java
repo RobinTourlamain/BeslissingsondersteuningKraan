@@ -68,14 +68,14 @@ public class Algorithm {
             int xMax = crane.xMax;
 
             if (container.length > 1) {
-//                if (xMin == 0) {
-//                    xMax += 1;
-//                }
-//                if (xMax == terminal.length) {
-//                    xMin -= 1;
-//                }
-                xMin -= 1;
-                xMax += 1;
+                if (xMin == 0) {
+                    xMax += 1;
+                }
+                if (xMax == terminal.length) {
+                    xMin -= 1;
+                }
+//                xMin -= 1;
+//                xMax += 1;
             }
 
             Slot containerSlot = container.slots.get(0);

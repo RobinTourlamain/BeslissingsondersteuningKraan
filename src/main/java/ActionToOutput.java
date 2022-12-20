@@ -1,4 +1,5 @@
 import java.util.*;
+
 public class ActionToOutput {
 
     public static List<List<OutputRecord>> toOutput(List<Action> actionlist, List<Crane> cranes) {
@@ -176,7 +177,7 @@ public class ActionToOutput {
             return true;
         }
         System.out.println("kan niet executen");
-        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + "length: " + action.container.length);
+        System.out.println(leftmostslot + "," + rightmostslot + " niet binnen: " + crane.xMin + "," + crane.xMax + " length: " + action.container.length);
         return false;
     }
 
