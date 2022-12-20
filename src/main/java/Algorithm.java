@@ -68,16 +68,18 @@ public class Algorithm {
             int xMax = crane.xMax;
 
             if (container.length > 1) {
-                if (xMin == 0) {
-                    xMax += 1;
-                }
-                if (xMax == terminal.length) {
-                    xMin -= 1;
-                }
+//                if (xMin == 0) {
+//                    xMax += 1;
+//                }
+//                if (xMax == terminal.length) {
+//                    xMin -= 1;
+//                }
+                xMin -= 1;
+                xMax += 1;
             }
 
             Slot containerSlot = container.slots.get(0);
-            if (xMin <= containerSlot.x && containerSlot.x <= xMax && xMin <= currentSlot.x && currentSlot.x <= xMax) {
+            if (xMin <= containerSlot.x && containerSlot.x + container.length - 1 <= xMax && xMin <= currentSlot.x && currentSlot.x + container.length - 1 <= xMax) {
                 oneCrane = true;
                 break;
             }

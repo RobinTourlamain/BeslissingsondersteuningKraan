@@ -121,7 +121,7 @@ public class Transfer {
                 }
             }
         }
-        Collections.shuffle(moveActions);
+        //Collections.shuffle(moveActions);
         actions.addAll(moveActions);
 
         return actions;
@@ -217,8 +217,10 @@ public class Transfer {
                 Slot slot = terminal.area.get(x).get(y);
                 if (slot.containers.size() != 0) {
                     Container topContainer = slot.containers.peek();
-                    if (topContainer.isMovable()) {
-                        movableContainers.add(topContainer);
+                    if (x + topContainer.length - 1 < xMax) {
+                        if (topContainer.isMovable()) {
+                            movableContainers.add(topContainer);
+                        }
                     }
                 }
             }

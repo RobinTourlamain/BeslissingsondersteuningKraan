@@ -63,7 +63,7 @@ public class HeightReduction {
 
     public static boolean makeRoomHere(Terminal terminal, Crane crane, Container container, List<Action> result) {
         for (int y = 0; y < terminal.width; y++) {
-            for (int x = crane.xMin; x + container.length -1 < crane.xMax; x++) {
+            for (int x = crane.xMin; x + container.length - 1 < crane.xMax; x++) {
                 if (!terminal.area.get(x).get(y).containers.isEmpty()) {
                     if (terminal.area.get(x).get(y).containers.peek().isMovable()) {
                         if (moveRandom(terminal, terminal.area.get(x).get(y).containers.peek(), crane, result)) {

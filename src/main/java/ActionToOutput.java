@@ -1,4 +1,3 @@
-import javafx.scene.chart.Axis;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -51,6 +50,8 @@ public class ActionToOutput {
                 double ydurationcrane = Math.abs(cranes.get(entry.getKey()).y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
                 double pickupduration = Math.max(xdurationcrane, ydurationcrane);
 
+                //TODO move other cranes out of way
+
                 //get move duration
                 double xduration = Math.abs((double)entry.getValue().slot.x - entry.getValue().prevSlot.x) / cranes.get(entry.getKey()).speedX;
                 double yduration = Math.abs((double)entry.getValue().slot.y - entry.getValue().prevSlot.y) / cranes.get(entry.getKey()).speedY;
@@ -75,58 +76,17 @@ public class ActionToOutput {
                                 )
                 );
             }
-
-            //move cranes without task out of way
-            for(Crane crane : cranes){
-                if(!map.containsKey(crane.id)){
-                    List<Integer> safezone = getSafeSpaces(crane, map, cranes).stream().toList();
-                    int safe;
-                    if(crane.id > cranes.size()/2){
-                        safe = safezone.get(0);
-                    }
-                    else{
-                        safe = safezone.get(safezone.size()-1);
-                    }
-                    records.get(index).add(
-                            new OutputRecord(
-                                    crane.id,
-                                    -1,
-                                    time + 1,
-                                    time + 2,
-                                    -1,   //TODO moet vorige ppos zijn
-                                    -1,
-                                    safe,
-                                    -1,
-                                    null
-                            )
-                    );
-                }
-            }
-
             time += duration;
             index++;
         }
         return records;
     }
 
-    public  static Set<Integer> getSafeSpaces(Crane crane, Map<Integer, Action> actions, List<Crane> cranes){
-        Set<Integer> range = new HashSet<>();
-        for(int i = crane.xMin; i < crane.xMax; i++){
-            range.add(i);
-        }
-        List<Crane> tasked = new ArrayList<>();
-        actions.keySet().forEach(integer -> {tasked.add(cranes.get(integer));});
-        for(Crane tc : tasked){
-            Set<Integer> newrange = new HashSet<>();
-            for(int i = tc.xMin; i < tc.xMax; i++){
-                newrange.add(i);
-            }
-            range.removeAll(newrange);
-        }
-        return range;
-    }
-
     public static boolean overlapWithOtherActions(Action action, Map<Integer, Action> craneactions, List<Action> actions, int index) {
+
+//        if (craneactions.isEmpty()) {
+//            return false;
+//        }
 
         List<Action> consider = new ArrayList<>(craneactions.values());
         for (int i = 0; i < index; i++) {
