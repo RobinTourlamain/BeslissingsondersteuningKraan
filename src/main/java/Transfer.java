@@ -4,11 +4,19 @@ public class Transfer {
 
     public static List<Action> makeSolution(Terminal terminal, Slot currentSlot, int height, Container container) {
         List<Action> result = new ArrayList<>();
-        recursion(result, terminal, currentSlot, height, container);
+
+        boolean resultFound = false;
+        int depth = 1;
+        while (!resultFound && depth <= 20) {
+            resultFound = recursion(result, terminal, currentSlot, height, container, depth);
+            depth++;
+        }
+
+
         return result;
     }
 
-    public static boolean recursion(List<Action> result, Terminal terminal, Slot currentSlot, int height, Container container) {
+    public static boolean recursion(List<Action> result, Terminal terminal, Slot currentSlot, int height, Container container, int depth) {
         boolean containerPlaceable = true;
         for (int i = 0; i < container.length; i++) {
             Slot slot = terminal.slots.get(currentSlot.id + i);
@@ -19,17 +27,20 @@ public class Transfer {
         }
 
         if (!container.isMovable() || !containerPlaceable) {
+            if (depth <= 0) {
+                return false;
+            }
             //System.out.println("recursie");
             List<Action> actions = getPossibleMoves(terminal, currentSlot, height, container);
-            //System.out.println(actions.size());
+            System.out.println(actions.size());
             if (actions.isEmpty()) {
                 return false;
             }
-            Collections.shuffle(actions);
+            //Collections.shuffle(actions);
             for (Action action : actions) {
                 result.add(action);
                 action.execute(terminal);
-                if (recursion(result, terminal, currentSlot, height, container)) {
+                if (recursion(result, terminal, currentSlot, height, container, depth - 1)) {
                     return true;
                 }
                 result.remove(action);
@@ -71,16 +82,47 @@ public class Transfer {
             blacklistSlots.addAll(blockingContainer.slots);
         }
 
+
         //Per movable blocking container make action objects with all possible locations to move to
         for (Container blockingContainer : movableBlocking) {
             for (int y = 0; y < terminal.width; y++) {
-                for (int x = 0; x + container.length <= terminal.length; x++) {
+                for (int x = 0; x + blockingContainer.length < terminal.length; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), container, x, y)) {
+                        assert terminal.area.get(x).get(y).id + blockingContainer.length < terminal.slots.size();
                         actions.add(new Action(blockingContainer, terminal.area.get(x).get(y)));
                     }
                 }
             }
         }
+
+
+        //Generate other random moves if stuck
+        Set<Container> movableContainers = new HashSet<>();
+        for (int y = 0; y < terminal.width; y++) {
+            for (int x = 0; x < terminal.length; x++) {
+                Slot slot = terminal.area.get(x).get(y);
+                if (slot.containers.size() != 0) {
+                    Container topContainer = slot.containers.peek();
+                    if (topContainer.isMovable()) {
+                        movableContainers.add(topContainer);
+                    }
+                }
+            }
+        }
+
+        List<Action> moveActions = new ArrayList<>();
+        for (Container movableContainer : movableContainers) {
+            for (int y = 0; y < terminal.width; y++) {
+                for (int x = 0; x + movableContainer.length < terminal.length; x++) {
+                    if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), container, x, y)) {
+                        assert terminal.area.get(x).get(y).id + movableContainer.length <= terminal.slots.size();
+                        moveActions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
+                    }
+                }
+            }
+        }
+        Collections.shuffle(moveActions);
+        actions.addAll(moveActions);
 
         return actions;
     }
@@ -163,7 +205,7 @@ public class Transfer {
         Set<Container> movableContainers = new HashSet<>();
 
         for (int y = 0; y < terminal.width; y++) {
-            for (int x = xMin; x + container.length < xMax; x++) {
+            for (int x = xMin; x < xMax; x++) {
                 Slot slot = terminal.area.get(x).get(y);
                 if (slot.containers.size() != 0) {
                     Container topContainer = slot.containers.peek();
@@ -176,7 +218,7 @@ public class Transfer {
 
         for (Container movableContainer : movableContainers) {
             for (int y = 0; y < terminal.width; y++) {
-                for (int x = 0; x + container.length <= terminal.length; x++) {
+                for (int x = 0; x + movableContainer.length < terminal.length; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(), container, x, y)) {
                         actions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
                     }
