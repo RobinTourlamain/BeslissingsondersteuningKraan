@@ -43,8 +43,12 @@ public class Interface extends Application {
         //String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
         //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
         //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
+        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json";
+        //String filename = "instances/8t/TerminalC_10_10_3_2_80.json";
+        //String filename = "instances/9t/TerminalC_10_10_3_2_100.json";
+        String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
         //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         Input input = new Input(filename);
 

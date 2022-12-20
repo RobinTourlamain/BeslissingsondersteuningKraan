@@ -25,6 +25,7 @@ public class Transfer {
             if (actions.isEmpty()) {
                 return false;
             }
+            Collections.shuffle(actions);
             for (Action action : actions) {
                 result.add(action);
                 action.execute(terminal);
