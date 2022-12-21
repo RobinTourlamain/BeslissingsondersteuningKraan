@@ -5,17 +5,17 @@ public class ActionToOutput {
     public static List<List<OutputRecord>> toOutput(List<Action> actionlist, List<Crane> cranes) {
 
         List<Action> actions = new ArrayList<>(actionlist);
-        List<Map<Integer, Action>> actionframes = new ArrayList<>();
+        List<Map<Integer, Action>> actionFrames = new ArrayList<>();
 
         //bepaal welke acties in parallel gebeuren
         int index = 0;
         while (!actions.isEmpty()) {
-            actionframes.add(new HashMap<>());
+            actionFrames.add(new HashMap<>());
             for (Crane crane : cranes) {
                 for (int i = 0; i < actions.size(); i++) {
                     Action action = actions.get(i);
-                    if (canExecute(crane, action) && !overlapWithOtherActions(action, actionframes.get(index), actions, i)) {
-                        actionframes.get(index).put(crane.id, action);
+                    if (canExecute(crane, action) && !overlapWithOtherActions(action, actionFrames.get(index), actions, i)) {
+                        actionFrames.get(index).put(crane.id, action);
                         actions.remove(action);
                         break;
                     }
@@ -24,12 +24,12 @@ public class ActionToOutput {
             index++;
         }
 
-        actionframes.forEach(m -> {m.forEach((key, value)-> {
+        actionFrames.forEach(m -> {m.forEach((key, value)-> {
             System.out.print("crane " + key + " container " + value.container.id + " from x " + value.prevSlot.x + " to x " + value.slot.x + ", ");
         });
             System.out.println();});
 
-        return toOutputRecords(actionframes, cranes);
+        return toOutputRecords(actionFrames, cranes);
     }
 
     public static List<List<OutputRecord>> toOutputRecords(List<Map<Integer, Action>> actionlist, List<Crane> cranes){
@@ -111,7 +111,7 @@ public class ActionToOutput {
             range.add(i);
         }
         List<Crane> tasked = new ArrayList<>();
-        actions.keySet().forEach(integer -> {tasked.add(cranes.get(integer));});
+        actions.keySet().forEach(integer -> tasked.add(cranes.get(integer)));
         for(Crane tc : tasked){
             Set<Integer> newrange = new HashSet<>();
             for(int i = tc.xMin; i < tc.xMax; i++){
@@ -148,9 +148,7 @@ public class ActionToOutput {
 
             if (leftmostslot <= rightmostslotc && rightmostslot >= leftmostslotc) {
                 System.out.println("overlap: " + leftmostslot + "," + rightmostslot + " binnen: " + leftmostslotc + "," + rightmostslotc + " lengte: " + a.container.length);
-                craneactions.forEach((key, value)-> {
-                    System.out.println(key + " " + value.container.id  + " tussen " + value.slot.x + ", " + value.prevSlot.x );
-                });
+                craneactions.forEach((key, value)-> System.out.println(key + " " + value.container.id  + " tussen " + value.slot.x + ", " + value.prevSlot.x ));
                 return true;
             }
         }

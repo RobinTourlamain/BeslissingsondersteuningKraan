@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main {
-    public static List<Action> main(String filename) {
+public class Prepare {
+    public static List<Action> prepare(String filename) {
 
         Input input = new Input(filename);
         Terminal startTerminal = input.getTerminal();

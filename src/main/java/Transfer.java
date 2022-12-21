@@ -12,7 +12,6 @@ public class Transfer {
             depth++;
         }
 
-
         return result;
     }
 
@@ -30,13 +29,13 @@ public class Transfer {
             if (depth <= 0) {
                 return false;
             }
-            //System.out.println("recursie");
+
             List<Action> actions = getPossibleMoves(terminal, currentSlot, height, container);
             System.out.println(actions.size());
             if (actions.isEmpty()) {
                 return false;
             }
-            //Collections.shuffle(actions);
+
             for (Action action : actions) {
                 result.add(action);
                 action.execute(terminal);
@@ -46,11 +45,12 @@ public class Transfer {
                 result.remove(action);
                 action.reverse(terminal);
             }
+
             return false;
         }
         else {
             if (Algorithm.staysWithinOneCraneArea(terminal, container, currentSlot) || terminal.cranes.size() == 1) {
-                Action finalMove = new Action(container, currentSlot, "final place one crane");
+                Action finalMove = new Action(container, currentSlot);
                 finalMove.execute(terminal);
                 result.add(finalMove);
                 System.out.println(container.id + " moved successfully");
@@ -88,8 +88,7 @@ public class Transfer {
             for (int y = 0; y < terminal.width; y++) {
                 for (int x = 0; x + blockingContainer.length < terminal.length; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), container, x, y)) {
-                        assert terminal.area.get(x).get(y).id + blockingContainer.length < terminal.slots.size();
-                        actions.add(new Action(blockingContainer, terminal.area.get(x).get(y), "move blocking"));
+                        actions.add(new Action(blockingContainer, terminal.area.get(x).get(y)));
                     }
                 }
             }
@@ -129,13 +128,11 @@ public class Transfer {
             for (int y = 0; y < terminal.width; y++) {
                 for (int x = xMin; x + movableContainer.length < xMax; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), container, x, y)) {
-                        assert terminal.area.get(x).get(y).id + movableContainer.length <= terminal.slots.size();
-                        moveActions.add(new Action(movableContainer, terminal.area.get(x).get(y), " random move stuck"));
+                        moveActions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
                     }
                 }
             }
         }
-        //Collections.shuffle(moveActions);
         actions.addAll(moveActions);
 
         return actions;
@@ -169,11 +166,6 @@ public class Transfer {
         int xMin = craneCopy.get(1).xMin;
         int xMax = craneCopy.get(0).xMax;
 
-//        if (container.length > 1) {
-//            xMin -= 1;
-//            xMax += 1;
-//        }
-
         boolean resultFound = false;
         int depth = 1;
         while (!resultFound && depth <= 50) {
@@ -198,7 +190,7 @@ public class Transfer {
                 result.add(action);
                 action.execute(terminal);
                 if (transferRecursion(result, terminal, container, currentSlot, xMin, xMax, depth - 1)) {
-                    Action restore = new Action(action.container, action.prevSlot, "restore");
+                    Action restore = new Action(action.container, action.prevSlot);
                     result.add(restore);
                     restore.execute(terminal);
 
@@ -210,14 +202,16 @@ public class Transfer {
             return false;
         }
         else {
-            Action transferMove = new Action(container, transferSlot, "prepare transfer 2 cranes");
+            Action transferMove = new Action(container, transferSlot);
             transferMove.execute(terminal);
             result.add(transferMove);
             System.out.println("transfer");
-            Action finalMove = new Action(container, currentSlot, "actual transfer 2 cranes");
+
+            Action finalMove = new Action(container, currentSlot);
             finalMove.execute(terminal);
             result.add(finalMove);
             System.out.println(container.id + " moved successfully");
+
             return true;
         }
     }
@@ -229,13 +223,12 @@ public class Transfer {
         for (int y = 0; y < terminal.width; y++) {
             for (int x = xMin; x < xMax; x++) {
                 Slot slot = terminal.area.get(x).get(y);
-                if (slot.containers.size() != 0) {
-                    Container topContainer = slot.containers.peek();
-                    if (x + topContainer.length < xMax) {
-                        if (topContainer.isMovable()) {
-                            movableContainers.add(topContainer);
-                        }
-                    }
+                if (slot.containers.size() == 0) {
+                    continue;
+                }
+                Container topContainer = slot.containers.peek();
+                if (x + topContainer.length < xMax && topContainer.isMovable()) {
+                    movableContainers.add(topContainer);
                 }
             }
         }
@@ -244,13 +237,12 @@ public class Transfer {
             for (int y = 0; y < terminal.width; y++) {
                 for (int x = 0; x + movableContainer.length < terminal.length; x++) {
                     if (Algorithm.containerFits(terminal, new ArrayList<>(), container, x, y)) {
-                        actions.add(new Action(movableContainer, terminal.area.get(x).get(y), "transfer move out of the way"));
+                        actions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
                     }
                 }
             }
         }
 
-        Collections.shuffle(actions);
         return actions;
     }
 }

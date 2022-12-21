@@ -2,18 +2,10 @@ public class Action {
     public final Container container;
     public final Slot slot;
     public Slot prevSlot;
-    public String string;
 
     public Action(Container container, Slot slot) {
         this.container = container;
         this.slot = slot;
-        this.string = "";
-    }
-
-    public Action(Container container, Slot slot, String string) {
-        this.container = container;
-        this.slot = slot;
-        this.string = string;
     }
 
     public void execute(Terminal terminal) {

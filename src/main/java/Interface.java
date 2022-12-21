@@ -13,9 +13,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Interface extends Application {
 
@@ -46,9 +44,9 @@ public class Interface extends Application {
         //String filename = "instances/7t/TerminalC_10_10_3_2_80.json"; //demo
         //String filename = "instances/8t/TerminalC_10_10_3_2_80.json";
         //String filename = "instances/9t/TerminalC_10_10_3_2_100.json";
-        //String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
+        String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
         //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        //String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         Input input = new Input(filename);
 
@@ -60,7 +58,7 @@ public class Interface extends Application {
         List<Container> containers = startTerminal.containers;
 
         //plot containers
-        List<Integer> plotted = new ArrayList<>();
+        Set<Integer> plotted = new HashSet<>();
         for (int h = 0; h < startTerminal.maxHeight; h++) {
             for (Slot slot : slots) {
                 if (slot.containers.size() > h) {
@@ -106,7 +104,7 @@ public class Interface extends Application {
         }
 
         //voer acties uit
-        List<Action> actions = Main.main(filename);
+        List<Action> actions = Prepare.prepare(filename);
         System.out.println("actionsize " + actions.size());
         List<List<OutputRecord>> records =  ActionToOutput.toOutput(actions, startTerminal.cranes);
         SequentialTransition sequence = new SequentialTransition();
@@ -180,50 +178,6 @@ public class Interface extends Application {
         }
 
         sequence.play();
-
-//        for (Action action : actions) {
-//            String id = "#" + action.container.id;
-//            Rectangle rectangle = (Rectangle) pane.lookup(id);
-//            List<Text> textsource = new ArrayList<>();
-//            List<Text> textdestination = new ArrayList<>();
-//            for (int i = 0; i < action.container.length; i++) {
-//                textsource.add((Text) pane.lookup("#h" + (action.prevSlot.id + i)));
-//                textdestination.add((Text) pane.lookup("#h" + (action.slot.id + i)));
-//            }
-//
-//            KeyValue keyValueposx = new KeyValue(crane.translateXProperty(), rectangle.getTranslateX() + (rectangle.getWidth()/2));
-//            KeyValue keyValueposy = new KeyValue(crane.translateYProperty(), rectangle.getTranslateY() + (rectangle.getHeight()/2));
-//
-//            int finalPrior = prior;
-//            KeyFrame keyFramepos = new KeyFrame(Duration.seconds(2), actionEvent -> {
-//                rectangle.toFront();
-//                rectangle.setViewOrder(finalPrior);
-//                for (Text text : textsource) {
-//                    text.setText(String.valueOf(Integer.parseInt(text.getText()) - 1));
-//                }
-//            }, keyValueposx, keyValueposy);
-//            prior--;
-//
-//            Timeline timeline1 = new Timeline(keyFramepos);
-//            sequence.getChildren().add(timeline1);
-//
-//            KeyValue keyValuex = new KeyValue(rectangle.translateXProperty(), pane.getWidth()/tlength*action.slot.x);
-//            KeyValue keyValuey = new KeyValue(rectangle.translateYProperty(), pane.getHeight()/twidth*action.slot.y);
-//            KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*(action.slot.x + 0.5)-crane.getWidth()/2);
-//            KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*(action.slot.y + 0.5)-crane.getHeight()/2);
-//
-//            KeyFrame keyFrame = new KeyFrame(Duration.seconds(2), actionEvent -> {
-//                for (Text text : textdestination) {
-//                    text.setText(String.valueOf(Integer.parseInt(text.getText()) + 1));
-//                }
-//            }, keyValuex, keyValuey, keyValuecranex, keyValuecraney);
-//            Timeline timeline2 = new Timeline(keyFrame);
-//            sequence.getChildren().add(timeline2);
-//            rectangle.toFront();
-//            crane.toFront();
-//            frame.toFront();
-//        }
-//        sequence.play();
     }
 
     public Rectangle newContainer(Pane pane, int tlength, int twidth, int i, int j, int index, int length, int prior) {
