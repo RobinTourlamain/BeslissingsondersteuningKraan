@@ -15,7 +15,7 @@ import javafx.util.Duration;
 
 import java.util.*;
 
-public class Interface extends Application {
+public class Main extends Application {
 
     public static void main(String[] args) {
         launch();
