@@ -17,22 +17,23 @@ public class Prepare {
             Terminal endTerminal = inputTarget.getTerminal();
 
             for (int height = 0; height < startTerminal.maxHeight; height++) {
-                for (int slotnumber = 0; slotnumber < startTerminal.slots.size(); slotnumber++) {
-                    if (endTerminal.slots.get(slotnumber).containers.size() > height) {
+                for (int slotNumber = 0; slotNumber < startTerminal.slots.size(); slotNumber++) {
+                    if (endTerminal.slots.get(slotNumber).containers.size() > height) {
 
-                        Container container = startTerminal.containers.get(endTerminal.slots.get(slotnumber).containers.get(height).id);
+                        Container container = startTerminal.containers.get(endTerminal.slots.get(slotNumber).containers.get(height).id);
 
-                        if (startTerminal.slots.get(slotnumber).containers.size() > height) {
-                            Container originalcontainer = startTerminal.slots.get(slotnumber).containers.get(height);
+                        if (startTerminal.slots.get(slotNumber).containers.size() > height) {
+                            Container originalcontainer = startTerminal.slots.get(slotNumber).containers.get(height);
                             if (container.id == originalcontainer.id) {
                                 continue;
                             }
                         }
 
-                        result.addAll(Transfer.makeSolution(startTerminal, startTerminal.slots.get(slotnumber), height, container));
+                        result.addAll(Transfer.makeSolution(startTerminal, startTerminal.slots.get(slotNumber), height, container));
                     }
                 }
 
+                //check if level correct, if not stay on same level
                 for (int i = 0; i < startTerminal.slots.size(); i++) {
                     Slot startSlot = startTerminal.slots.get(i);
                     Slot endSlot = endTerminal.slots.get(i);
@@ -49,6 +50,7 @@ public class Prepare {
                 }
             }
 
+            //algorithm finished, check for mistakes
             boolean mistakeFound = false;
             for (int i = 0; i < endTerminal.slots.size(); i++) {
                 Slot startSlot = startTerminal.slots.get(i);
@@ -63,7 +65,7 @@ public class Prepare {
             }
             if (!mistakeFound) {
                 System.out.println("all correct");
-                result.forEach(action -> System.out.println("container " + action.container.id + " naar x " + action.slot.x));
+                //result.forEach(action -> System.out.println("container " + action.container.id + " naar x " + action.slot.x));
                 return result;
             }
         }
@@ -75,6 +77,7 @@ public class Prepare {
             boolean mistakeFound = false;
             for (Slot slot : startTerminal.slots) {
                 if (slot.containers.size() > startTerminal.targetHeight) {
+                    System.out.println("fout gevonden");
                     mistakeFound = true;
                     break;
                 }
@@ -86,7 +89,7 @@ public class Prepare {
             return result;
         }
 
-        result.forEach(System.out::println);
+        //result.forEach(System.out::println);
         return result;
     }
 }

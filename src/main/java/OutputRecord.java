@@ -1,25 +1,23 @@
 public class OutputRecord {
-    public int craneid;
-    public int cid;
-    public double ptime;
-    public double etime;
-    public double pposx;
-    public double pposy;
-    public double eposx;
-    public double eposy;
+    public int craneId;
+    public int containerId;
+    public double pickupTime;
+    public double endTime;
+    public double pickupPosX;
+    public double pickupPosY;
+    public double endPosX;
+    public double endPosY;
     public Action action;
 
-    public OutputRecord(){}
-
-    public OutputRecord(int craneid, int cid, double ptime, double etime, double pposx, double pposy, double eposx, double eposy, Action action) {
-        this.craneid = craneid;
-        this.cid = cid;
-        this.ptime = ptime;
-        this.etime = etime;
-        this.pposx = pposx;
-        this.pposy = pposy;
-        this.eposx = eposx;
-        this.eposy = eposy;
+    public OutputRecord(int craneId, int containerId, double pickupTime, double endTime, double pickupPosX, double pickupPosY, double endPosX, double endPosY, Action action) {
+        this.craneId = craneId;
+        this.containerId = containerId;
+        this.pickupTime = pickupTime;
+        this.endTime = endTime;
+        this.pickupPosX = pickupPosX;
+        this.pickupPosY = pickupPosY;
+        this.endPosX = endPosX;
+        this.endPosY = endPosY;
         this.action = action;
     }
 }

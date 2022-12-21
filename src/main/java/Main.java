@@ -51,8 +51,8 @@ public class Main extends Application {
         Input input = new Input(filename);
 
         Terminal startTerminal = input.getTerminal();
-        int tlength = startTerminal.length;
-        int twidth = startTerminal.width;
+        int terminalLength = startTerminal.length;
+        int terminalWidth = startTerminal.width;
         List<List<Slot>> area = startTerminal.area;
         List<Slot> slots = startTerminal.slots;
         List<Container> containers = startTerminal.containers;
@@ -65,7 +65,7 @@ public class Main extends Application {
                     int id = slot.containers.get(h).id;
                     if (!plotted.contains(id)) {
                         plotted.add(id);
-                        Rectangle rectangle = newContainer(pane, tlength, twidth, slot.y, slot.x, id, slot.containers.get(h).length, 10100-h);
+                        Rectangle rectangle = newContainer(pane, terminalLength, terminalWidth, slot.y, slot.x, id, slot.containers.get(h).length, 10100-h);
                         pane.getChildren().add(rectangle);
                     }
                 }
@@ -78,24 +78,24 @@ public class Main extends Application {
             text.setId("h" + slot.id);
             text.setScaleY(-1);
             text.setFont(Font.font(16));
-            text.translateXProperty().set(pane.getWidth()/tlength*(slot.x + 0.5));
-            text.translateYProperty().set(pane.getHeight()/twidth*(slot.y + 0.5));
+            text.translateXProperty().set(pane.getWidth() / terminalLength * (slot.x + 0.5));
+            text.translateYProperty().set(pane.getHeight() / terminalWidth * (slot.y + 0.5));
             pane.getChildren().add(text);
         }
 
         //plot kranen
         for(Crane c: startTerminal.cranes){
             Rectangle crane = new Rectangle();
-            crane.heightProperty().bind(pane.heightProperty().divide(twidth).divide(2));
-            crane.widthProperty().bind(pane.widthProperty().divide(tlength).divide(2));
-            crane.translateXProperty().set(pane.getWidth()/tlength * c.x - crane.getWidth()/2);
-            crane.translateYProperty().set(pane.getHeight()/twidth * c.y - crane.getHeight()/2);
+            crane.heightProperty().bind(pane.heightProperty().divide(terminalWidth).divide(2));
+            crane.widthProperty().bind(pane.widthProperty().divide(terminalLength).divide(2));
+            crane.translateXProperty().set(pane.getWidth() / (terminalLength * c.x) - (crane.getWidth() / 2));
+            crane.translateYProperty().set(pane.getHeight()/ (terminalWidth * c.y) - (crane.getHeight() / 2));
             crane.setId("c" + c.id);
             crane.setViewOrder(0);
 
             Rectangle frame = new Rectangle();
             frame.heightProperty().bind(pane.heightProperty());
-            frame.widthProperty().bind(pane.widthProperty().divide(tlength).divide(4));
+            frame.widthProperty().bind(pane.widthProperty().divide(terminalLength).divide(4));
             frame.translateXProperty().bind(crane.translateXProperty().add(crane.widthProperty().divide(4)));
             frame.setViewOrder(0);
 
@@ -118,56 +118,56 @@ public class Main extends Application {
 
             for(OutputRecord record : batch){
                 //safety distance related?
-                if(record.cid == -1){
-                    Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneid);
-                    KeyValue safetyx = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.eposx - crane.getWidth()/2);
-                    KeyFrame safetyframe = new KeyFrame(Duration.seconds(2),safetyx);
-                    pickup.getKeyFrames().add(safetyframe);
+                if(record.containerId == -1){
+                    Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneId);
+                    KeyValue safetyX = new KeyValue(crane.translateXProperty(), ((pane.getWidth() / terminalLength) * record.endPosX) - (crane.getWidth() / 2));
+                    KeyFrame safetyFrame = new KeyFrame(Duration.seconds(2), safetyX);
+                    pickup.getKeyFrames().add(safetyFrame);
                     continue;
                 }
 
                 //actual move
                 Rectangle rectangle = (Rectangle) pane.lookup("#" + record.action.container.id);
-                Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneid);
-                List<Text> textsource = new ArrayList<>();
-                List<Text> textdestination = new ArrayList<>();
+                Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneId);
+                List<Text> textSource = new ArrayList<>();
+                List<Text> textDestination = new ArrayList<>();
 
                 for (int i = 0; i < record.action.container.length; i++) {
-                    textsource.add((Text) pane.lookup("#h" + (record.action.prevSlot.id + i)));
-                    textdestination.add((Text) pane.lookup("#h" + (record.action.slot.id + i)));
+                    textSource.add((Text) pane.lookup("#h" + (record.action.prevSlot.id + i)));
+                    textDestination.add((Text) pane.lookup("#h" + (record.action.slot.id + i)));
                 }
 
                 //movement kraan naar container
-                KeyValue pickupx = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.pposx - crane.getWidth()/2);
-                KeyValue pickupy = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*record.pposy - crane.getHeight()/2);
+                KeyValue pickupX = new KeyValue(crane.translateXProperty(), (pane.getWidth()/terminalLength)*record.pickupPosX - crane.getWidth()/2);
+                KeyValue pickupY = new KeyValue(crane.translateYProperty(), (pane.getHeight()/terminalWidth)*record.pickupPosY - crane.getHeight()/2);
                 int finalPrior = prior;
-                KeyFrame pickupframe = new KeyFrame(Duration.seconds(record.ptime - time), actionEvent -> {
+                KeyFrame pickupFrame = new KeyFrame(Duration.seconds(record.pickupTime - time), actionEvent -> {
                     rectangle.toFront();
                     rectangle.setViewOrder(finalPrior);
-                    for (Text text : textsource) {
+                    for (Text text : textSource) {
                         text.setText(String.valueOf(Integer.parseInt(text.getText()) - 1));
                     }
-                }, pickupx, pickupy);
+                }, pickupX, pickupY);
                 prior--;
-                pickup.getKeyFrames().add(pickupframe);
+                pickup.getKeyFrames().add(pickupFrame);
 
 
                 //movement container
-                KeyValue keyValuex = new KeyValue(rectangle.translateXProperty(), (pane.getWidth()/tlength)*record.action.slot.x);
-                KeyValue keyValuey = new KeyValue(rectangle.translateYProperty(), (pane.getHeight()/twidth)*record.action.slot.y);
-                KeyValue keyValuecranex = new KeyValue(crane.translateXProperty(), (pane.getWidth()/tlength)*record.eposx - crane.getWidth()/2);
-                KeyValue keyValuecraney = new KeyValue(crane.translateYProperty(), (pane.getHeight()/twidth)*record.eposy - crane.getHeight()/2);
+                KeyValue keyValueX = new KeyValue(rectangle.translateXProperty(), (pane.getWidth() / terminalLength) * record.action.slot.x);
+                KeyValue keyValueY = new KeyValue(rectangle.translateYProperty(), (pane.getHeight() / terminalWidth) * record.action.slot.y);
+                KeyValue keyValueCraneX = new KeyValue(crane.translateXProperty(), ((pane.getWidth() / terminalLength) * record.endPosX) - (crane.getWidth() / 2));
+                KeyValue keyValueCraneY = new KeyValue(crane.translateYProperty(), ((pane.getHeight() / terminalWidth) * record.endPosY) - (crane.getHeight() / 2));
 
-                KeyFrame moveframe = new KeyFrame(Duration.seconds(record.etime-record.ptime), actionEvent -> {
-                    for (Text text : textdestination) {
+                KeyFrame moveFrame = new KeyFrame(Duration.seconds(record.endTime - record.pickupTime), actionEvent -> {
+                    for (Text text : textDestination) {
                         text.setText(String.valueOf(Integer.parseInt(text.getText()) + 1));
                     }
-                }, keyValuex, keyValuey, keyValuecranex, keyValuecraney);
-                move.getKeyFrames().add(moveframe);
+                }, keyValueX, keyValueY, keyValueCraneX, keyValueCraneY);
+                move.getKeyFrames().add(moveFrame);
 
                 //set duration
-                if(record.etime - time > duration){
-                    duration = record.etime - time;
+                if(record.endTime - time > duration){
+                    duration = record.endTime - time;
                 }
             }
 
