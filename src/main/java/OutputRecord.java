@@ -20,4 +20,20 @@ public class OutputRecord {
         this.endPosY = endPosY;
         this.action = action;
     }
+
+    @Override
+    public String toString() {
+        String containerIdString = "";
+        if (containerId != -1) {
+            containerIdString = String.valueOf(containerId);
+        }
+        return craneId + ";" +
+                containerIdString + ";" +
+                pickupTime + ";" +
+                endTime + ";" +
+                pickupPosX + ";" +
+                pickupPosY + ";" +
+                endPosX + ";" +
+                endPosY + ";";
+    }
 }

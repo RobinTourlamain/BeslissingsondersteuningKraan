@@ -78,6 +78,7 @@ public class Prepare {
             for (Slot slot : startTerminal.slots) {
                 if (slot.containers.size() > startTerminal.targetHeight) {
                     System.out.println("fout gevonden");
+                    System.out.println(slot.id);
                     mistakeFound = true;
                     break;
                 }

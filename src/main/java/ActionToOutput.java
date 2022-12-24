@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class ActionToOutput {
@@ -29,7 +31,24 @@ public class ActionToOutput {
 //        });
 //            System.out.println();});
 
-        return toOutputRecords(actionFrames, cranes);
+        List<List<OutputRecord>> recordMatrix = toOutputRecords(actionFrames, cranes);
+
+        try (FileWriter fileWriter = new FileWriter("output.txt")) {
+            fileWriter.write("%CraneId;ContainerId;PickupTime;EndTime;PickupPosX;PickupPosY;EndPosX;EndPosY;");
+            fileWriter.write(System.lineSeparator());
+
+            for (List<OutputRecord> recordList : recordMatrix) {
+                recordList.sort(Comparator.comparing(outputRecord -> outputRecord.craneId));
+                for (OutputRecord record : recordList) {
+                    fileWriter.write(record.toString());
+                    fileWriter.write(System.lineSeparator());
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        
+        return recordMatrix;
     }
 
     public static List<List<OutputRecord>> toOutputRecords(List<Map<Integer, Action>> actionlist, List<Crane> cranes) {
@@ -63,13 +82,17 @@ public class ActionToOutput {
                                 entry.getValue().container.id,
                                 time + pickupDuration,
                                 time + pickupDuration + moveDuration,
-                                entry.getValue().prevSlot.x + (double) (entry.getValue().container.length / 2),
+                                entry.getValue().prevSlot.x +  ((double) entry.getValue().container.length / 2),
                                 entry.getValue().prevSlot.y + 0.5,
-                                entry.getValue().slot.x + (double) (entry.getValue().container.length / 2),
+                                entry.getValue().slot.x +  ((double) entry.getValue().container.length / 2),
                                 entry.getValue().slot.y + 0.5,
                                 entry.getValue()
                         )
                 );
+
+                cranes.get(entry.getKey()).x = entry.getValue().slot.x;
+                cranes.get(entry.getKey()).y = entry.getValue().slot.y;
+
             }
 
             //move cranes without task out of way
@@ -83,16 +106,40 @@ public class ActionToOutput {
                     else {
                         safe = safezone.get(safezone.size() - 1);
                     }
+
+
+
+                    double lastEndPosX = crane.x;
+                    double lastEndPosY = crane.y;
+
+                    boolean prevFound = false;
+                    int recordIndex = records.size() - 2;
+                    while (!prevFound && records.size() > 2) {
+                        for (OutputRecord outputRecord : records.get(recordIndex)) {
+                            if (outputRecord.craneId == crane.id) {
+                                lastEndPosX = outputRecord.endPosX;
+                                lastEndPosY = outputRecord.endPosY;
+                                prevFound = true;
+                                break;
+                            }
+                        }
+                        recordIndex--;
+                    }
+
+                    if (safe == lastEndPosX) {
+                        continue;
+                    }
+
                     records.get(index).add(
                             new OutputRecord(
                                     crane.id,
                                     -1,
-                                    time + 1,
+                                    time + 1, //TODO: tijd ok?
                                     time + 2,
-                                    -1,   //TODO moet vorige ppos zijn
-                                    -1,
+                                    lastEndPosX,
+                                    lastEndPosY,
                                     safe,
-                                    -1,
+                                    lastEndPosY,
                                     null
                             )
                     );

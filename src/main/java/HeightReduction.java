@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HeightReduction {
@@ -64,13 +65,13 @@ public class HeightReduction {
         for (int y = 0; y < terminal.width; y++) {
             for (int x = crane.xMin; x + container.length - 1 < crane.xMax; x++) {
                 if (terminal.area.get(x).get(y).containers.isEmpty()) {
-                    return false;
+                    continue;
                 }
                 if (!terminal.area.get(x).get(y).containers.peek().isMovable()) {
-                    return false;
+                    continue;
                 }
                 if (!moveRandom(result, terminal, terminal.area.get(x).get(y).containers.peek(), crane)) {
-                    return false;
+                    continue;
                 }
                 Slot slot = craneHasRoomForContainer(terminal, crane, container, new ArrayList<>());
                 if (slot != null) {
@@ -159,7 +160,7 @@ public class HeightReduction {
     public static Slot craneHasRoomForContainer(Terminal terminal, Crane crane, Container container, List<Slot> blacklist) {
         for (int y = 0; y < terminal.width; y++) {
             //x + container.length might need -1
-            for (int x = crane.xMin; x + container.length < crane.xMax; x++) { //kan fucken als de xmax van de kraan niet klopt >:(
+            for (int x = crane.xMin; x + container.length - 1 < crane.xMax; x++) { //kan fucken als de xmax van de kraan niet klopt >:(
                 List<Slot> slots = new ArrayList<>();
                 for (int i = 0; i < container.length; i++) {
                     slots.add(terminal.area.get(x+i).get(y));
