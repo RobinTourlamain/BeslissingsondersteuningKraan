@@ -17,7 +17,21 @@ import java.util.*;
 
 public class Main extends Application {
 
+    public static String pathToOutput = null;
+    public static String pathToInput1 = null;
+    public static String pathToInput2 = null;
+
+
     public static void main(String[] args) {
+
+        if (args.length != 0) {
+            pathToOutput = args[0];
+            pathToInput1 = args[1];
+            if (args.length > 2) {
+                pathToInput2 = args[2];
+            }
+        }
+
         launch();
     }
 
@@ -37,18 +51,29 @@ public class Main extends Application {
         primaryStage.setMaximized(true);
         primaryStage.show();
 
-        //String filename = "instances/1t/TerminalA_20_10_3_2_100.json";
-        //String filename = "instances/3t/TerminalA_20_10_3_2_160.json";
-        //String filename = "instances/5t/TerminalB_20_10_3_2_160.json";
-        //String filename = "instances/6t/Terminal_10_10_3_1_100.json";
-        //String filename = "instances/7t/TerminalC_10_10_3_2_80.json"; //demo
-        //String filename = "instances/8t/TerminalC_10_10_3_2_80.json";
-        //String filename = "instances/9t/TerminalC_10_10_3_2_100.json";
-        //String filename = "instances/10t/TerminalC_10_10_3_2_100.json";
-        //String filename = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        String filename = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        //String filename1 = "instances/1t/TerminalA_20_10_3_2_100.json";
+        //String filename1 = "instances/3t/TerminalA_20_10_3_2_160.json";
+        //String filename1 = "instances/5t/TerminalB_20_10_3_2_160.json";
+        //String filename1 = "instances/6t/Terminal_10_10_3_1_100.json";
+        String filename1 = "instances/7t/TerminalC_10_10_3_2_80.json";
+        //String filename1 = "instances/8t/TerminalC_10_10_3_2_80.json";
+        //String filename1 = "instances/9t/TerminalC_10_10_3_2_100.json";
+        //String filename1 = "instances/10t/TerminalC_10_10_3_2_100.json";
+        //String filename1 = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
+        //String filename1 = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
-        Input input = new Input(filename);
+        String[] filenameSplit = filename1.split("/");
+        String filename2 = filenameSplit[0] + "/" + filenameSplit[1] + "/" + "target" + filenameSplit[2];
+
+        if (pathToInput1 != null) {
+            filename1 = pathToInput1;
+        }
+        if (pathToInput2 != null) {
+            filename2 = pathToInput2;
+        }
+
+
+        Input input = new Input(filename1);
 
         Terminal startTerminal = input.getTerminal();
         int terminalLength = startTerminal.length;
@@ -104,9 +129,9 @@ public class Main extends Application {
         }
 
         //voer acties uit
-        List<Action> actions = Prepare.prepare(filename);
+        List<Action> actions = Prepare.prepare(filename1, filename2);
         System.out.println("actionsize " + actions.size());
-        List<List<OutputRecord>> recordMatrix =  ActionToOutput.toOutput(actions, startTerminal.cranes);
+        List<List<OutputRecord>> recordMatrix =  ActionToOutput.toOutput(actions, startTerminal.cranes, pathToOutput);
         SequentialTransition sequence = new SequentialTransition();
         int prior = 10000;
         double time = 0;

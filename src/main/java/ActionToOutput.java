@@ -4,7 +4,7 @@ import java.util.*;
 
 public class ActionToOutput {
 
-    public static List<List<OutputRecord>> toOutput(List<Action> actionlist, List<Crane> cranes) {
+    public static List<List<OutputRecord>> toOutput(List<Action> actionlist, List<Crane> cranes, String pathToOutput) {
 
         List<Action> actions = new ArrayList<>(actionlist);
         List<Map<Integer, Action>> actionFrames = new ArrayList<>();
@@ -33,7 +33,7 @@ public class ActionToOutput {
 
         List<List<OutputRecord>> recordMatrix = toOutputRecords(actionFrames, cranes);
 
-        try (FileWriter fileWriter = new FileWriter("output.txt")) {
+        try (FileWriter fileWriter = new FileWriter(Objects.requireNonNullElse(pathToOutput, "output.txt"))) {
             fileWriter.write("%CraneId;ContainerId;PickupTime;EndTime;PickupPosX;PickupPosY;EndPosX;EndPosY;");
             fileWriter.write(System.lineSeparator());
 

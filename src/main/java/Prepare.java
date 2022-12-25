@@ -2,18 +2,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Prepare {
-    public static List<Action> prepare(String filename) {
+    public static List<Action> prepare(String filename1, String filename2) {
 
-        Input input = new Input(filename);
+        Input input = new Input(filename1);
         Terminal startTerminal = input.getTerminal();
 
         List<Action> result = new ArrayList<>();
 
         if (startTerminal.targetHeight == 0) {
-            String[] filenameSplit = filename.split("/");
-            String targetFilename = filenameSplit[0] + "/" + filenameSplit[1] + "/" + "target" + filenameSplit[2];
 
-            Input inputTarget = new Input(targetFilename);
+            Input inputTarget = new Input(filename2);
             Terminal endTerminal = inputTarget.getTerminal();
 
             for (int height = 0; height < startTerminal.maxHeight; height++) {
