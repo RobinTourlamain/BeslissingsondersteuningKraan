@@ -15,8 +15,9 @@ public class Slot {
         this.containers = new Stack<>();
     }
 
-    public void addContainer(Container container){
+    public void addContainer(Container container) {
         containers.add(container);
+        assert containers.size() <= maxHeight;
     }
 
     @Override

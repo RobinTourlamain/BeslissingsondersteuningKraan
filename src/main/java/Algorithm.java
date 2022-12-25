@@ -35,6 +35,27 @@ public class Algorithm {
         return true;
     }
 
+    public static boolean containerFitsHeight(Terminal terminal, List<Slot> blacklist, Container container, int x, int y) {
+        //check of placable
+        List<Slot> placehere = new ArrayList<>();
+        if (x + container.length - 1 >= terminal.length) {
+            return false;
+        }
+        for (int i = 0; i < container.length; i++) {
+            placehere.add(terminal.area.get(x+i).get(y));
+        }
+        if (!container.isPlaceableTargetHeight(placehere, terminal.targetHeight)) {
+            return false;
+        }
+        //check of blacklisted
+        for (int i = 0; i < container.length; i++) {
+            if (blacklist.contains(terminal.area.get(x+i).get(y))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static Slot findTransferSlot(Terminal terminal, Container container) {
         assert terminal.cranes.size() == 2 : "Wrong crane count";
 
@@ -74,8 +95,6 @@ public class Algorithm {
                 if (xMax == terminal.length) {
                     xMin -= 1;
                 }
-//                xMin -= 1;
-//                xMax += 1;
             }
 
             Slot containerSlot = container.slots.get(0);

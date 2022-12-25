@@ -127,7 +127,7 @@ public class Transfer {
 
             for (int y = 0; y < terminal.width; y++) {
                 for (int x = xMin; x + movableContainer.length < xMax; x++) {
-                    if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), container, x, y)) {
+                    if (Algorithm.containerFits(terminal, new ArrayList<>(blacklistSlots), movableContainer, x, y)) {
                         moveActions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
                     }
                 }

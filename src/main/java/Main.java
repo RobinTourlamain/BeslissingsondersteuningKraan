@@ -55,12 +55,12 @@ public class Main extends Application {
         //String filename1 = "instances/3t/TerminalA_20_10_3_2_160.json";
         //String filename1 = "instances/5t/TerminalB_20_10_3_2_160.json";
         //String filename1 = "instances/6t/Terminal_10_10_3_1_100.json";
-        String filename1 = "instances/7t/TerminalC_10_10_3_2_80.json";
+        //String filename1 = "instances/7t/TerminalC_10_10_3_2_80.json";
         //String filename1 = "instances/8t/TerminalC_10_10_3_2_80.json";
         //String filename1 = "instances/9t/TerminalC_10_10_3_2_100.json";
         //String filename1 = "instances/10t/TerminalC_10_10_3_2_100.json";
         //String filename1 = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        //String filename1 = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        String filename1 = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         String[] filenameSplit = filename1.split("/");
         String filename2 = filenameSplit[0] + "/" + filenameSplit[1] + "/" + "target" + filenameSplit[2];
@@ -146,7 +146,7 @@ public class Main extends Application {
                 if (record.containerId == -1) {
                     Rectangle crane = (Rectangle) pane.lookup("#c" + record.craneId);
                     KeyValue safetyX = new KeyValue(crane.translateXProperty(), (pane.getWidth() / terminalLength * record.endPosX) - (crane.getWidth() / 2));
-                    KeyFrame safetyFrame = new KeyFrame(Duration.seconds(2), safetyX);
+                    KeyFrame safetyFrame = new KeyFrame(Duration.seconds(record.endTime - time), safetyX);
                     pickup.getKeyFrames().add(safetyFrame);
                     continue;
                 }

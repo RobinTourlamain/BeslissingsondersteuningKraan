@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class HeightReduction {
 
@@ -28,10 +26,8 @@ public class HeightReduction {
                     if (recursion(result, terminal)) {
                         return true;
                     }
-                    else {
-                        Action action = result.remove(result.size()-1);
-                        action.reverse(terminal);
-                    }
+                    Action action = result.remove(result.size() - 1);
+                    action.reverse(terminal);
                 }
             }
         }
@@ -62,47 +58,71 @@ public class HeightReduction {
     }
 
     public static boolean makeRoomHere(List<Action> result, Terminal terminal, Crane crane, Container container) {
-        for (int y = 0; y < terminal.width; y++) {
-            for (int x = crane.xMin; x + container.length - 1 < crane.xMax; x++) {
-                if (terminal.area.get(x).get(y).containers.isEmpty()) {
-                    continue;
-                }
-                if (!terminal.area.get(x).get(y).containers.peek().isMovable()) {
-                    continue;
-                }
-                if (!moveRandom(result, terminal, terminal.area.get(x).get(y).containers.peek(), crane)) {
-                    continue;
-                }
-                Slot slot = craneHasRoomForContainer(terminal, crane, container, new ArrayList<>());
-                if (slot != null) {
-                    Action action = new Action(container, terminal.area.get(slot.x).get(slot.y));
-                    action.execute(terminal);
-                    result.add(action);
-                    System.out.println(action.container.id + " to " + action.slot.id);
-                    return true;
-                }
-                else if (makeRoomHere(result, terminal, crane, container)) {
-                    return true;
-                }
-                else {
-                    Action action = result.remove(result.size()-1);
-                    action.reverse(terminal);
-                }
+
+        boolean resultFound = false;
+        int depth = 1;
+        while (!resultFound && depth <= 50) {
+            resultFound = makeRoomRecursion(result, terminal, crane, container, depth);
+            depth++;
+        }
+        return resultFound;
+    }
+
+    public static boolean makeRoomRecursion(List<Action> result, Terminal terminal, Crane crane, Container container, int depth) {
+        Slot slot = craneHasRoomForContainer(terminal, crane, container, new ArrayList<>());
+        if (slot != null) {
+            return true;
+        }
+        if (depth <= 0) {
+            return false;
+        }
+        List<Action> actions = getMoves(terminal, crane);
+        if (actions.isEmpty()) {
+            return false;
+        }
+        //Collections.shuffle(actions);
+        for (Action action : actions) {
+            result.add(action);
+            action.execute(terminal);
+            if (makeRoomRecursion(result, terminal, crane, container, depth - 1)) {
+                return true;
             }
+            result.remove(action);
+            action.reverse(terminal);
         }
         return false;
     }
 
-    public static boolean moveRandom(List<Action> result, Terminal terminal, Container container, Crane crane) {
-        List<Slot> blacklist = new ArrayList<>(container.slots);
-        Slot slot = craneHasRoomForContainer(terminal, crane, container, blacklist);
-        if (slot != null) {
-            Action action = new Action(container, terminal.area.get(slot.x).get(slot.y));
-            action.execute(terminal);
-            result.add(action);
-            System.out.println(action.container.id + " to " + action.slot.id);
+    public static List<Action> getMoves(Terminal terminal, Crane crane) {
+        Set<Container> movableContainers = new HashSet<>();
+        for (int y = 0; y < terminal.width; y++) {
+            for (int x = 0; x < terminal.length; x++) {
+                Slot slot = terminal.area.get(x).get(y);
+                if (slot.containers.size() != 0) {
+                    Container topContainer = slot.containers.peek();
+                    if (topContainer.isMovable()) {
+                        movableContainers.add(topContainer);
+                    }
+                }
+            }
         }
-        return false;
+
+        List<Action> moveActions = new ArrayList<>();
+        for (Container movableContainer : movableContainers) {
+            Slot containerSlot = movableContainer.slots.get(0);
+            if (!(crane.xMin <= containerSlot.x && containerSlot.x + movableContainer.length <= crane.xMax)) {
+                continue;
+            }
+            for (int y = 0; y < terminal.width; y++) {
+                for (int x = crane.xMin; x + movableContainer.length < crane.xMax; x++) {
+                    if (Algorithm.containerFitsHeight(terminal, new ArrayList<>(), movableContainer, x, y)) {
+                        moveActions.add(new Action(movableContainer, terminal.area.get(x).get(y)));
+                    }
+                }
+            }
+        }
+
+        return moveActions;
     }
 
     public static boolean isInTransition(Terminal terminal, Crane crane, Container container, int room) {
