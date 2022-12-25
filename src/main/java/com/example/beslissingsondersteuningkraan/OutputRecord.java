@@ -1,3 +1,5 @@
+package com.example.beslissingsondersteuningkraan;
+
 public class OutputRecord {
     public int craneId;
     public int containerId;

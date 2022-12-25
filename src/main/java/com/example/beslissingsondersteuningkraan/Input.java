@@ -1,3 +1,5 @@
+package com.example.beslissingsondersteuningkraan;
+
 import com.github.cliftonlabs.json_simple.JsonArray;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;

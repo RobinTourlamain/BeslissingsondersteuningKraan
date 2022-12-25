@@ -1,3 +1,5 @@
+package com.example.beslissingsondersteuningkraan;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.SequentialTransition;

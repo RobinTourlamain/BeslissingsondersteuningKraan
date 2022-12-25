@@ -1,3 +1,5 @@
+package com.example.beslissingsondersteuningkraan;
+
 public class Crane {
     public int id;
     public float x;
