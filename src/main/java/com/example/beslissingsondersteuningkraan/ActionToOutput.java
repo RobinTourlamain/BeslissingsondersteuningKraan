@@ -132,12 +132,14 @@ public class ActionToOutput {
                         continue;
                     }
 
+                    double moveAwayDuration = Math.abs(safe - lastEndPosX) / crane.speedX;
+
                     records.get(index).add(
                             new OutputRecord(
                                     crane.id,
                                     -1,
-                                    time + 1, //TODO: tijd ok?
-                                    time + 2,
+                                    time + 1,
+                                    time + moveAwayDuration,
                                     lastEndPosX,
                                     lastEndPosY,
                                     safe,

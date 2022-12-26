@@ -60,9 +60,9 @@ public class Main extends Application {
         //String filename1 = "instances/7t/TerminalC_10_10_3_2_80.json";
         //String filename1 = "instances/8t/TerminalC_10_10_3_2_80.json";
         //String filename1 = "instances/9t/TerminalC_10_10_3_2_100.json";
-        //String filename1 = "instances/10t/TerminalC_10_10_3_2_100.json";
+        String filename1 = "instances/10t/TerminalC_10_10_3_2_100.json";
         //String filename1 = "instances/2mh/MH2Terminal_20_10_3_2_100.json";
-        String filename1 = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
+        //String filename1 = "instances/4mh/MH2Terminal_20_10_3_2_160.json";
 
         String[] filenameSplit = filename1.split("/");
         String filename2 = filenameSplit[0] + "/" + filenameSplit[1] + "/" + "target" + filenameSplit[2];
