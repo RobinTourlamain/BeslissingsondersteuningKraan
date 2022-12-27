@@ -43,16 +43,17 @@ public class HeightReduction {
             Action action = new Action(container, terminal.area.get(slot.x).get(slot.y));
             action.execute(terminal);
             result.add(action);
-            System.out.println(action.container.id + " to " + action.slot.id);
+            //System.out.println(action.container.id + " to " + action.slot.x);
             return true;
         }
-        System.out.println("no room!");
+        //System.out.println("no room!");
         int room = otherCranesHaveRoom(terminal, crane, container);
         if (room == 0) {
-            System.out.println("maakplaats!");
+            //System.out.println("maakplaats!");
             return makeRoomHere(result, terminal, crane, container);
         }
         else if (!isInTransition(terminal, crane, container, room)) {
+            //System.out.println("move transition");
             return moveToTransitionZone(result, terminal, crane, container, room);
         }
 
@@ -87,6 +88,7 @@ public class HeightReduction {
             result.add(action);
             action.execute(terminal);
             if (makeRoomRecursion(result, terminal, crane, container, depth - 1)) {
+                //System.out.println("room " + action.container.id + " to " + action.slot.x);
                 return true;
             }
             result.remove(action);
@@ -132,7 +134,15 @@ public class HeightReduction {
         int minX = Math.max(crane.xMin, secondcrane.xMin);
         int maxX = Math.min(crane.xMax, secondcrane.xMax);
 
-        return container.slots.get(0).x > minX && container.slots.get(0).x + container.length - 1 < maxX;
+        int leftMostSlot = container.slots.get(0).x;
+        int rightMostSlot = leftMostSlot + container.length - 1;
+
+        if (container.length > 1) {
+            leftMostSlot++;
+            rightMostSlot--;
+        }
+
+        return minX < leftMostSlot && rightMostSlot < maxX;
     }
 
     public  static boolean moveToTransitionZone(List<Action> result, Terminal terminal, Crane crane, Container container, int room) {
@@ -148,10 +158,11 @@ public class HeightReduction {
                     slots.add(terminal.area.get(x+i).get(y));
                 }
                 if (container.isPlaceable(slots)) {
-                    System.out.println("plaats in transition");
+                    //System.out.println("plaats in transition");
                     Action action = new Action(container, terminal.area.get(x).get(y));
                     action.execute(terminal);
                     result.add(action);
+                    //System.out.println("transition " + action.container.id + " to " + action.slot.id);
                     return true;
                 }
             }
@@ -175,7 +186,7 @@ public class HeightReduction {
                 }
             }
         }
-        System.out.println("other crane has room");
+        //System.out.println("other crane has room");
         return 0;
     }
 
